@@ -1,1 +1,3 @@
-# kinetic30-legal
+## ライセンス
+
+© SPONVITA Inc. All rights reserved.
