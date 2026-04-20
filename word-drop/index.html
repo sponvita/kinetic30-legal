@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WordDrop - 心に残った言葉を、いつでも手元に。</title>
+  <meta name="description" content="読書中に出会った名言や心に響いたフレーズを記録し、ホーム画面ウィジェットでふとした瞬間に振り返れるアプリ。">
+  <link rel="icon" type="image/svg+xml" href="../icon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans JP"', 'sans-serif'],
+          },
+          colors: {
+            navy: '#0f172a',
+            accent: '#2563eb',
+            teal: '#3a8e9e',
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    .screenshots { scrollbar-width: none; -ms-overflow-style: none; }
+    .screenshots::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body class="font-sans text-navy bg-slate-50 antialiased">
+
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-slate-50/70 backdrop-blur-md border-b border-slate-200/60">
+    <div class="px-6 sm:px-8 h-16 flex items-center">
+      <div class="max-w-5xl mx-auto w-full flex items-center justify-between">
+        <a href="../" class="flex items-center gap-2">
+          <img src="../k01-word-drop-icon.png" alt="" width="34" height="34" class="h-8 w-8 rounded-lg flex-shrink-0">
+          <span class="text-lg font-semibold tracking-tighter text-navy">WordDrop</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="pt-16">
+
+    <!-- Hero -->
+    <section class="py-20 sm:py-28 px-6 sm:px-8">
+      <div class="max-w-5xl mx-auto">
+        <div class="flex flex-col sm:flex-row items-center gap-10 sm:gap-14">
+          <div class="flex-1 text-center sm:text-left">
+            <div class="mb-6 sm:hidden">
+              <img src="../k01-word-drop-icon.png" alt="WordDrop" width="80" height="80" class="w-20 h-20 rounded-2xl mx-auto shadow-lg">
+            </div>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter text-navy mb-6 leading-tight">
+              心に残った言葉を、<br>いつでも手元に。
+            </h1>
+            <p class="text-slate-600 text-sm sm:text-base leading-relaxed max-w-lg mb-4">
+              WordDropは、読書中に出会った名言や心に響いたフレーズを記録し、ホーム画面ウィジェットでふとした瞬間に振り返れるアプリです。
+            </p>
+            <p class="text-slate-500 text-sm leading-relaxed max-w-lg mb-8">
+              読んでいるとき、ふと心に刺さる一文がある。<br>
+              でも次のページをめくれば、いつの間にか忘れてしまう。<br>
+              そんな「あなたにとって意味のある言葉」だけを手元に残しませんか？
+            </p>
+            <div class="flex flex-wrap justify-center sm:justify-start gap-3">
+              <a href="https://apps.apple.com/jp/app/worddrop-%E5%90%8D%E8%A8%80-%E8%AA%AD%E6%9B%B8%E3%83%A1%E3%83%A2%E7%AE%A1%E7%90%86/id6761678817" class="inline-flex items-center gap-2 px-6 py-3 bg-navy text-white text-sm font-medium rounded-xl hover:bg-slate-800 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                App Store
+              </a>
+              <span class="inline-flex items-center gap-2 px-6 py-3 bg-slate-300 text-slate-500 text-sm font-medium rounded-xl cursor-not-allowed">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="20" viewBox="0 0 512 512" fill="currentColor"><path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/></svg>
+                Google Play (準備中)
+              </span>
+            </div>
+          </div>
+          <div class="hidden sm:block flex-shrink-0">
+            <img src="../k01-word-drop-icon.png" alt="WordDrop" width="120" height="120" class="w-28 lg:w-32 h-28 lg:h-32 rounded-3xl shadow-xl">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Screenshots -->
+    <section class="pb-20 sm:pb-28">
+      <div class="screenshots flex gap-4 sm:gap-6 overflow-x-auto px-6 sm:px-8 snap-x snap-mandatory">
+        <div class="flex-shrink-0 snap-center first:ml-auto last:mr-auto">
+          <img src="screenshot-1.jpg" alt="心に残った言葉を、いつでも手元に。" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+        </div>
+        <div class="flex-shrink-0 snap-center">
+          <img src="screenshot-2.jpg" alt="ウィジェットでふとした瞬間に振り返れる" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+        </div>
+        <div class="flex-shrink-0 snap-center">
+          <img src="screenshot-3.jpg" alt="読書中に出会った心に響いたフレーズを記録" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+        </div>
+        <div class="flex-shrink-0 snap-center">
+          <img src="screenshot-4.jpg" alt="2種類のホーム画面ウィジェット" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+        </div>
+        <div class="flex-shrink-0 snap-center">
+          <img src="screenshot-5.jpg" alt="プレミアム版でタグで管理" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="py-20 sm:py-28 px-6 sm:px-8 bg-white">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-navy text-center mb-16">主な機能</h2>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-10 sm:gap-8">
+          <div>
+            <h3 class="text-base font-bold text-navy mb-2">名言・メモの保存</h3>
+            <p class="text-sm text-slate-500 leading-relaxed">出典・著者の記録も可能。読書中に出会った言葉をすぐに記録できます。</p>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-navy mb-2">ホーム画面ウィジェット</h3>
+            <p class="text-sm text-slate-500 leading-relaxed">保存した言葉がランダムで表示。ふとした瞬間に振り返れます。</p>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-navy mb-2">お気に入り・検索・並び替え</h3>
+            <p class="text-sm text-slate-500 leading-relaxed">お気に入り登録や検索、並び替えで大切な言葉にすぐアクセス。</p>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-navy mb-2">リスト/グリッド表示</h3>
+            <p class="text-sm text-slate-500 leading-relaxed">表示スタイルを切り替えて、自分に合った見方で言葉を眺められます。</p>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-navy mb-2">完全オフライン対応</h3>
+            <p class="text-sm text-slate-500 leading-relaxed">すべてのデータはデバイスに保存。アカウント登録もネット接続も不要です。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Premium -->
+    <section class="py-20 sm:py-28 px-6 sm:px-8">
+      <div class="max-w-4xl mx-auto">
+        <div class="border border-accent/20 rounded-2xl bg-accent/5 p-8 sm:p-12">
+          <p class="text-xs font-medium tracking-[0.2em] text-accent uppercase mb-3">Premium</p>
+          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-navy mb-8">プレミアムプラン</h2>
+          <div class="grid sm:grid-cols-2 gap-6">
+            <div class="flex items-start gap-3">
+              <span class="mt-1 w-5 h-5 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <div>
+                <p class="text-sm font-semibold text-navy">広告の非表示</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="mt-1 w-5 h-5 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <div>
+                <p class="text-sm font-semibold text-navy">タグ／カテゴリで整理</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="mt-1 w-5 h-5 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <div>
+                <p class="text-sm font-semibold text-navy">CSVデータエクスポート</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="mt-1 w-5 h-5 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <div>
+                <p class="text-sm font-semibold text-navy">ウィジェット表示対象の絞り込み</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-20 sm:py-28 px-6 sm:px-8 bg-white">
+      <div class="max-w-4xl mx-auto text-center">
+        <p class="text-slate-600 text-base sm:text-lg mb-8">あなただけの言葉のコレクションを、WordDropで。</p>
+        <div class="flex flex-wrap justify-center gap-3 mb-4">
+          <a href="https://apps.apple.com/jp/app/worddrop-%E5%90%8D%E8%A8%80-%E8%AA%AD%E6%9B%B8%E3%83%A1%E3%83%A2%E7%AE%A1%E7%90%86/id6761678817" class="inline-flex items-center gap-2 px-6 py-3 bg-navy text-white text-sm font-medium rounded-xl hover:bg-slate-800 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            App Store
+          </a>
+          <span class="inline-flex items-center gap-2 px-6 py-3 bg-slate-300 text-slate-500 text-sm font-medium rounded-xl cursor-not-allowed">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="20" viewBox="0 0 512 512" fill="currentColor"><path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/></svg>
+            Google Play (準備中)
+          </span>
+        </div>
+        <p class="text-xs text-slate-400">iOS / Android 対応・無料</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-12 px-6 sm:px-8 border-t border-slate-100">
+    <div class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="flex flex-wrap justify-center gap-4 text-sm text-slate-500">
+        <a href="../privacy.html" class="hover:text-navy transition-colors">プライバシーポリシー</a>
+        <span class="text-slate-300">|</span>
+        <a href="../terms.html" class="hover:text-navy transition-colors">利用規約</a>
+        <span class="text-slate-300">|</span>
+        <a href="../support.html" class="hover:text-navy transition-colors">サポート</a>
+      </div>
+      <p class="text-sm text-slate-400">&copy; 2026 <a href="https://sponvita.co.jp/" class="hover:text-navy transition-colors">SPONVITA Inc.</a></p>
+    </div>
+  </footer>
+
+</body>
+</html>
