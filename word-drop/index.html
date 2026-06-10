@@ -90,22 +90,30 @@
 
     <!-- Screenshots -->
     <section class="pb-20 sm:pb-28">
-      <div class="screenshots flex gap-4 sm:gap-6 overflow-x-auto px-6 sm:px-8 snap-x snap-mandatory">
-        <div class="flex-shrink-0 snap-center first:ml-auto last:mr-auto">
-          <img src="screenshot-1.jpg" alt="心に残った言葉を、いつでも手元に。" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+      <div class="relative">
+        <div class="screenshots flex gap-4 sm:gap-6 overflow-x-auto px-6 sm:px-8 snap-x snap-mandatory">
+          <div class="flex-shrink-0 snap-center first:ml-auto last:mr-auto">
+            <img src="screenshot-1.jpg" alt="心に残った言葉を、いつでも手元に。" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+          </div>
+          <div class="flex-shrink-0 snap-center">
+            <img src="screenshot-2.jpg" alt="ウィジェットでふとした瞬間に振り返れる" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+          </div>
+          <div class="flex-shrink-0 snap-center">
+            <img src="screenshot-3.jpg" alt="読書中に出会った心に響いたフレーズを記録" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+          </div>
+          <div class="flex-shrink-0 snap-center">
+            <img src="screenshot-4.jpg" alt="2種類のホーム画面ウィジェット" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+          </div>
+          <div class="flex-shrink-0 snap-center">
+            <img src="screenshot-5.jpg" alt="プレミアム版でタグで管理" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+          </div>
         </div>
-        <div class="flex-shrink-0 snap-center">
-          <img src="screenshot-2.jpg" alt="ウィジェットでふとした瞬間に振り返れる" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
-        </div>
-        <div class="flex-shrink-0 snap-center">
-          <img src="screenshot-3.jpg" alt="読書中に出会った心に響いたフレーズを記録" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
-        </div>
-        <div class="flex-shrink-0 snap-center">
-          <img src="screenshot-4.jpg" alt="2種類のホーム画面ウィジェット" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
-        </div>
-        <div class="flex-shrink-0 snap-center">
-          <img src="screenshot-5.jpg" alt="プレミアム版でタグで管理" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
-        </div>
+        <button type="button" data-scroll="prev" aria-label="前へ" class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-white/90 backdrop-blur shadow-md border border-slate-200 hover:bg-white text-navy transition">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button type="button" data-scroll="next" aria-label="次へ" class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-white/90 backdrop-blur shadow-md border border-slate-200 hover:bg-white text-navy transition">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
       </div>
     </section>
 
@@ -230,5 +238,30 @@
     </div>
   </footer>
 
+  <script>
+    (function () {
+      function updateArrows(section) {
+        var container = section.querySelector('.screenshots');
+        var hasOverflow = container.scrollWidth > container.clientWidth + 1;
+        section.querySelectorAll('[data-scroll]').forEach(function (btn) {
+          btn.style.display = hasOverflow ? '' : 'none';
+        });
+      }
+      document.querySelectorAll('[data-scroll]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var container = btn.parentElement.querySelector('.screenshots');
+          var dir = btn.dataset.scroll === 'next' ? 1 : -1;
+          container.scrollBy({ left: dir * container.clientWidth * 0.8, behavior: 'smooth' });
+        });
+      });
+      function updateAll() {
+        document.querySelectorAll('.screenshots').forEach(function (c) {
+          updateArrows(c.parentElement);
+        });
+      }
+      window.addEventListener('load', updateAll);
+      window.addEventListener('resize', updateAll);
+    })();
+  </script>
 </body>
 </html>

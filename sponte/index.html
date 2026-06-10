@@ -89,25 +89,33 @@
 
     <!-- Screenshots -->
     <section class="pb-20 sm:pb-28">
-      <div class="screenshots flex gap-4 sm:gap-6 overflow-x-auto px-6 sm:px-8 snap-x snap-mandatory">
-        <div class="flex-shrink-0 snap-center first:ml-auto last:mr-auto">
-          <img src="img1.png" alt="忙しい毎日に寄り添う実行支援アプリ" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+      <div class="relative">
+        <div class="screenshots flex gap-4 sm:gap-6 overflow-x-auto px-6 sm:px-8 snap-x snap-mandatory">
+          <div class="flex-shrink-0 snap-center first:ml-auto last:mr-auto">
+            <img src="img1.png" alt="忙しい毎日に寄り添う実行支援アプリ" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+          </div>
+          <div class="flex-shrink-0 snap-center">
+            <img src="img2.png" alt="最も大切なことに集中しよう" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+          </div>
+          <div class="flex-shrink-0 snap-center">
+            <img src="img3.png" alt="今やっているタスクだけを表示" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+          </div>
+          <div class="flex-shrink-0 snap-center">
+            <img src="img4.png" alt="毎日の気分を数値で記録" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+          </div>
+          <div class="flex-shrink-0 snap-center">
+            <img src="img5.png" alt="振り返りで自分を深く理解する" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+          </div>
+          <div class="flex-shrink-0 snap-center">
+            <img src="img6.png" alt="1年を通して変化を実感する" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+          </div>
         </div>
-        <div class="flex-shrink-0 snap-center">
-          <img src="img2.png" alt="最も大切なことに集中しよう" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
-        </div>
-        <div class="flex-shrink-0 snap-center">
-          <img src="img3.png" alt="今やっているタスクだけを表示" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
-        </div>
-        <div class="flex-shrink-0 snap-center">
-          <img src="img4.png" alt="毎日の気分を数値で記録" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
-        </div>
-        <div class="flex-shrink-0 snap-center">
-          <img src="img5.png" alt="振り返りで自分を深く理解する" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
-        </div>
-        <div class="flex-shrink-0 snap-center">
-          <img src="img6.png" alt="1年を通して変化を実感する" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
-        </div>
+        <button type="button" data-scroll="prev" aria-label="前へ" class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-white/90 backdrop-blur shadow-md border border-slate-200 hover:bg-white text-navy transition">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button type="button" data-scroll="next" aria-label="次へ" class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-white/90 backdrop-blur shadow-md border border-slate-200 hover:bg-white text-navy transition">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
       </div>
     </section>
 
@@ -246,5 +254,30 @@
     </div>
   </footer>
 
+  <script>
+    (function () {
+      function updateArrows(section) {
+        var container = section.querySelector('.screenshots');
+        var hasOverflow = container.scrollWidth > container.clientWidth + 1;
+        section.querySelectorAll('[data-scroll]').forEach(function (btn) {
+          btn.style.display = hasOverflow ? '' : 'none';
+        });
+      }
+      document.querySelectorAll('[data-scroll]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var container = btn.parentElement.querySelector('.screenshots');
+          var dir = btn.dataset.scroll === 'next' ? 1 : -1;
+          container.scrollBy({ left: dir * container.clientWidth * 0.8, behavior: 'smooth' });
+        });
+      });
+      function updateAll() {
+        document.querySelectorAll('.screenshots').forEach(function (c) {
+          updateArrows(c.parentElement);
+        });
+      }
+      window.addEventListener('load', updateAll);
+      window.addEventListener('resize', updateAll);
+    })();
+  </script>
 </body>
 </html>
