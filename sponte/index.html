@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sponte - 動けない日のための、実行支援アプリ。</title>
+  <meta name="description" content="やることは分かっているのに、動けない。Sponteは、今日の3つを決めて、いま取り組む1つだけを画面に出す実行支援アプリです。">
+  <link rel="icon" type="image/svg+xml" href="../icon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans JP"', 'sans-serif'],
+          },
+          colors: {
+            navy: '#0f172a',
+            accent: '#475c8a',
+            sand: '#d9cdb5',
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    .screenshots { scrollbar-width: none; -ms-overflow-style: none; }
+    .screenshots::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body class="font-sans text-navy bg-slate-50 antialiased">
+
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-slate-50/70 backdrop-blur-md border-b border-slate-200/60">
+    <div class="px-6 sm:px-8 h-16 flex items-center">
+      <div class="max-w-5xl mx-auto w-full flex items-center justify-between">
+        <a href="../" class="flex items-center gap-2">
+          <img src="../k02-sponte-icon.png" alt="" width="34" height="34" class="h-8 w-8 rounded-lg flex-shrink-0">
+          <span class="text-lg font-semibold tracking-tighter text-navy">Sponte</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="pt-16">
+
+    <!-- Hero -->
+    <section class="py-20 sm:py-28 px-6 sm:px-8">
+      <div class="max-w-5xl mx-auto">
+        <a href="../" class="inline-flex items-center gap-2 text-xs font-medium tracking-widest text-slate-400 uppercase hover:text-slate-600 transition-colors mb-10">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+          Apps
+        </a>
+        <div class="flex flex-col sm:flex-row items-center gap-10 sm:gap-14">
+          <div class="flex-1 text-center sm:text-left">
+            <div class="mb-6 sm:hidden">
+              <img src="../k02-sponte-icon.png" alt="Sponte" width="80" height="80" class="w-20 h-20 rounded-2xl mx-auto shadow-lg">
+            </div>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter text-navy mb-6 leading-tight">
+              動けない日のための、<br>実行支援アプリ。
+            </h1>
+          <p class="text-slate-600 text-sm sm:text-base leading-relaxed max-w-2xl mb-4">
+            やることは分かっているのに、動けない。タスクを整理しても、計画を立てても、なぜか実行できない。
+          </p>
+          <p class="text-slate-500 text-sm leading-relaxed max-w-2xl mb-8">
+            Sponteは、今日の3つを決めて、いま取り組む1つだけを画面に出します。<br>
+            「何から始めよう」で迷う時間が減り、タスク管理アプリを開く回数も減ります。
+          </p>
+          <div class="flex flex-wrap justify-center sm:justify-start gap-3">
+            <span class="inline-flex items-center gap-2 px-6 py-3 bg-slate-300 text-slate-500 text-sm font-medium rounded-xl cursor-not-allowed">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+              App Store (準備中)
+            </span>
+            <span class="inline-flex items-center gap-2 px-6 py-3 bg-slate-300 text-slate-500 text-sm font-medium rounded-xl cursor-not-allowed">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="20" viewBox="0 0 512 512" fill="currentColor"><path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/></svg>
+              Google Play (準備中)
+            </span>
+          </div>
+          </div>
+          <div class="hidden sm:block flex-shrink-0">
+            <img src="../k02-sponte-icon.png" alt="Sponte" width="120" height="120" class="w-28 lg:w-32 h-28 lg:h-32 rounded-3xl shadow-xl">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Screenshots -->
+    <section class="pb-20 sm:pb-28">
+      <div class="screenshots flex gap-4 sm:gap-6 overflow-x-auto px-6 sm:px-8 snap-x snap-mandatory">
+        <div class="flex-shrink-0 snap-center first:ml-auto last:mr-auto">
+          <img src="img1.png" alt="忙しい毎日に寄り添う実行支援アプリ" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+        </div>
+        <div class="flex-shrink-0 snap-center">
+          <img src="img2.png" alt="最も大切なことに集中しよう" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+        </div>
+        <div class="flex-shrink-0 snap-center">
+          <img src="img3.png" alt="今やっているタスクだけを表示" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+        </div>
+        <div class="flex-shrink-0 snap-center">
+          <img src="img4.png" alt="毎日の気分を数値で記録" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+        </div>
+        <div class="flex-shrink-0 snap-center">
+          <img src="img5.png" alt="振り返りで自分を深く理解する" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+        </div>
+        <div class="flex-shrink-0 snap-center">
+          <img src="img6.png" alt="1年を通して変化を実感する" class="h-[480px] sm:h-[560px] lg:h-[640px] w-auto rounded-2xl shadow-lg">
+        </div>
+      </div>
+    </section>
+
+    <!-- Philosophy -->
+    <section class="py-20 sm:py-28 px-6 sm:px-8 bg-white">
+      <div class="max-w-3xl mx-auto">
+        <p class="text-xs font-medium tracking-[0.2em] text-slate-400 uppercase mb-3 text-center">なぜ3つなのか</p>
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-navy text-center mb-10">整理するアプリではなく、<br class="sm:hidden">始めるアプリ。</h2>
+        <div class="space-y-6 text-slate-600 text-sm sm:text-base leading-relaxed">
+          <p>多くのタスク管理アプリは、「やることを整理する」ところまでは得意です。でも、最初の1つに取りかかるところは、ずっと自分でやるしかありませんでした。</p>
+          <p>やることを10個抱えたまま「何から始めよう」と考えている時間は、それ自体がエネルギーを消費します。Sponteは、その入口を3つに絞ることを薦めます。</p>
+          <p class="text-slate-500 text-sm">数を増やすことが目的ではありません。3つの中の1つに、最後まで向き合うためのアプリです。<br>（足りない日はあとから加えることもできますが、推奨は3つです。）</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="py-20 sm:py-28 px-6 sm:px-8">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-navy text-center mb-16">主な機能</h2>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-10 sm:gap-8">
+          <div>
+            <h3 class="text-base font-bold text-navy mb-2">朝、3つだけ決める</h3>
+            <p class="text-sm text-slate-500 leading-relaxed">いくつかの問いに答えるかたちで、今日の3つを順に書き出します。1番目・2番目・3番目が、そのまま優先順位になります。</p>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-navy mb-2">開始すれば、画面に任せる</h3>
+            <p class="text-sm text-slate-500 leading-relaxed">実行画面で「開始」を押すだけ。時間の計測も終了の記録も自動です。タイマーを止め忘れる心配はありません。</p>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-navy mb-2">Apple Watch / Live Activity</h3>
+            <p class="text-sm text-slate-500 leading-relaxed">iPhoneを取り出さなくても、Watchから開始と完了を操作できます。ロック画面のLive Activityに、いま取り組んでいる1つが表示されます。</p>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-navy mb-2">気分の記録</h3>
+            <p class="text-sm text-slate-500 leading-relaxed">3つを終えたあとの余白の時間に、今日の気分を数値で残せます。書いても書かなくても構いません。</p>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-navy mb-2">静かな振り返り</h3>
+            <p class="text-sm text-slate-500 leading-relaxed">週・月の単位で、自分の動きを静かに見返せます。評価も採点もしません。事実を、自然な日本語で並べ直すだけです。</p>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-navy mb-2">端末内に保存</h3>
+            <p class="text-sm text-slate-500 leading-relaxed">記録は端末内にだけ保存します。自動でクラウドに送る仕組みはなく、第三者の分析ツールも入れていません。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Premium -->
+    <section class="py-20 sm:py-28 px-6 sm:px-8 bg-white">
+      <div class="max-w-4xl mx-auto">
+        <div class="border border-accent/20 rounded-2xl bg-accent/5 p-8 sm:p-12">
+          <p class="text-xs font-medium tracking-[0.2em] text-accent uppercase mb-3">Premium</p>
+          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-navy mb-4">月末に、自分の動きを読み返す。</h2>
+          <p class="text-sm text-slate-600 leading-relaxed mb-8 max-w-2xl">
+            時間を使ったはずなのに、何も残っていない気がする。月末にそう感じることがあるなら、Sponteのプレミアムが役立ちます。毎月の記録を、自然な日本語の短い文章に整理して届けます。
+          </p>
+          <div class="grid sm:grid-cols-2 gap-6">
+            <div class="flex items-start gap-3">
+              <span class="mt-1 w-5 h-5 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#475c8a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <div>
+                <p class="text-sm font-semibold text-navy">月のテーマ</p>
+                <p class="text-xs text-slate-400 mt-0.5">月初に1行のテーマを設定。月末レポートの冒頭に反映</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="mt-1 w-5 h-5 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#475c8a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <div>
+                <p class="text-sm font-semibold text-navy">月次レポート</p>
+                <p class="text-xs text-slate-400 mt-0.5">その月の記録を自然な日本語で並べ直す</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="mt-1 w-5 h-5 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#475c8a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <div>
+                <p class="text-sm font-semibold text-navy">年間ヒートマップ</p>
+                <p class="text-xs text-slate-400 mt-0.5">1年分の取り組みを時間帯×日付の格子で表示</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="mt-1 w-5 h-5 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#475c8a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <div>
+                <p class="text-sm font-semibold text-navy">PDF / 画像書き出し</p>
+                <p class="text-xs text-slate-400 mt-0.5">月次レポートをPDFや画像として書き出し</p>
+              </div>
+            </div>
+          </div>
+          <p class="text-xs text-slate-400 mt-8">無料でも基本機能はそのまま使えます。いつでも解約できます。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Closing -->
+    <section class="py-20 sm:py-28 px-6 sm:px-8">
+      <div class="max-w-2xl mx-auto text-center">
+        <p class="text-slate-600 text-base sm:text-lg leading-relaxed mb-2">今日の3つを決める。</p>
+        <p class="text-slate-600 text-base sm:text-lg leading-relaxed mb-2">いま向き合う1つに集中する。</p>
+        <p class="text-slate-600 text-base sm:text-lg leading-relaxed mb-10">夜、今日の自分がどう動いたかを、静かに確かめる。</p>
+        <div class="flex flex-wrap justify-center gap-3 mb-4">
+          <span class="inline-flex items-center gap-2 px-6 py-3 bg-slate-300 text-slate-500 text-sm font-medium rounded-xl cursor-not-allowed">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            App Store (準備中)
+          </span>
+          <span class="inline-flex items-center gap-2 px-6 py-3 bg-slate-300 text-slate-500 text-sm font-medium rounded-xl cursor-not-allowed">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="20" viewBox="0 0 512 512" fill="currentColor"><path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/></svg>
+            Google Play (準備中)
+          </span>
+        </div>
+        <p class="text-xs text-slate-400">iOS / Android 対応予定</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-12 px-6 sm:px-8 border-t border-slate-100">
+    <div class="max-w-4xl mx-auto text-center space-y-4">
+      <div class="flex flex-wrap justify-center gap-4 text-sm text-slate-500">
+        <a href="../privacy.html" class="hover:text-navy transition-colors">プライバシーポリシー</a>
+        <span class="text-slate-300">|</span>
+        <a href="../terms.html" class="hover:text-navy transition-colors">利用規約</a>
+        <span class="text-slate-300">|</span>
+        <a href="../support.html" class="hover:text-navy transition-colors">サポート</a>
+      </div>
+      <p class="text-sm text-slate-400">&copy; 2026 <a href="https://sponvita.co.jp/" class="hover:text-navy transition-colors">SPONVITA Inc.</a></p>
+    </div>
+  </footer>
+
+</body>
+</html>
