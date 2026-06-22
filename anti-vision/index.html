@@ -535,6 +535,11 @@
             body: JSON.stringify(payload)
           });
 
+          // TikTok Pixel: フォーム送信を計測
+          if (typeof ttq !== 'undefined') {
+            ttq.track('SubmitForm');
+          }
+
           // フォームを隠して、お礼メッセージに差し替える
           document.getElementById('signup').classList.add('hidden');
           document.getElementById('thanks').classList.remove('hidden');
