@@ -1,4 +1,14 @@
 <!DOCTYPE html>
+<!--
+  人生立て直しアプリ LP（フェイクドア型・買い切り需要検証）
+  変更点:
+   - 詩的コピー型LP → 5ステップの簡易診断フローに刷新
+     [1]ヒーロー(診断誘導) → [2]5問診断(1問1画面) → [3]結果(タイプ判定)
+     → [4]フル版2,980円ボタン → 決済せず正直に開発中と明かす + メール登録 → [5]サンクス
+   - 決済は一切実装しない(フェイクドア)。価格ボタンのタップで肩透かし+正直な打ち明け。
+   - GASは既存 post()/mode:no-cors/stage パターンを踏襲。stage: quiz_start/quiz_complete/buy_intent/lead。
+   - Clarity / TikTok Pixel は既存のまま維持。TikTokは ViewContent→AddToCart→SubmitForm を発火。
+-->
 <html lang="ja" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
@@ -24,10 +34,10 @@
   }(window, document, 'ttq');
   </script>
   <!-- TikTok Pixel Code End -->
-  <title>人生を立て直すアプリ - 先行ユーザー募集</title>
-  <meta name="description" content="このままの自分で、あと半年いく？ 1日で悩み・思い込み・価値観を棚卸しし「これからの自分の設計図」を作るアプリ。先行ユーザー募集中。">
-  <meta property="og:title" content="このままの自分で、あと半年いく？">
-  <meta property="og:description" content="1日で、人生を棚卸しする。悩み・思い込み・価値観を整理して「これからの自分の設計図」を作るアプリ。先行ユーザー募集中。">
+  <title>30秒の無料診断 - あなたが変われない本当の理由</title>
+  <meta name="description" content="5つの質問に答えるだけ。あなたが“変われない本当の理由”が30秒でわかる無料診断。スマホだけで完結します。">
+  <meta property="og:title" content="あなたが“変われない本当の理由”がわかる無料診断">
+  <meta property="og:description" content="5つの質問に答えるだけ・所要1分・無料。スマホだけで完結します。">
   <meta property="og:type" content="website">
   <link rel="icon" type="image/svg+xml" href="../icon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -50,238 +60,149 @@
     }
   </script>
   <style>
-    .reveal { opacity: 0; transform: translateY(16px); transition: opacity .7s ease, transform .7s ease; }
-    .reveal.in { opacity: 1; transform: none; }
-    /* ドロップダウンの選択肢（option）を大きく */
-    select option { font-size: 17px; }
+    .fade-in { animation: fadeIn .45s ease both; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
   </style>
 </head>
 <body class="font-sans bg-ink text-white antialiased selection:bg-accent/30">
 
-  <main>
+  <main class="min-h-[100dvh] flex flex-col">
 
-    <!-- 1. Hero -->
-    <section class="min-h-[90vh] flex items-center px-6 sm:px-8 py-24 bg-gradient-to-b from-ink via-ink to-blue-950">
-      <div class="max-w-3xl mx-auto w-full">
-        <p class="text-xs font-medium tracking-[0.3em] text-slate-500 uppercase mb-8">Self Reset</p>
-        <h1 class="text-3xl sm:text-5xl lg:text-[3.25rem] font-black tracking-tight leading-[1.3] mb-8">
-          今年の目標、<br class="sm:hidden">まだ覚えてますか？
+    <!-- [1] ヒーロー -->
+    <section id="screen-hero" class="flex-1 flex items-center px-6 py-16 bg-gradient-to-b from-ink via-ink to-blue-950">
+      <div class="max-w-md mx-auto w-full text-center">
+        <p class="text-xs font-medium tracking-[0.3em] text-accent uppercase mb-6">Self Reset 診断</p>
+        <h1 class="text-3xl sm:text-4xl font-black tracking-tight leading-[1.35] mb-6">
+          5つの質問で、<br>
+          あなたが<span class="text-accent">“変われない本当の理由”</span>がわかる。
         </h1>
-        <p class="text-slate-300 text-2xl sm:text-3xl font-bold leading-relaxed max-w-xl mb-10">
-          このままの自分で、<br>あと半年いく？
+        <p class="text-slate-300 text-base leading-relaxed mb-10">
+          所要1分・無料。<br>スマホだけで完結します。
         </p>
-        <div class="space-y-5 text-slate-400 text-sm sm:text-base leading-relaxed max-w-xl mb-12">
-          <p class="text-slate-300">
-            変わりたいのに、また同じ毎日。<br>
-            悩み、思い込み、価値観、明日からの一歩を整理する<br>
-            「人生の棚卸しアプリ」を作っています。
-          </p>
+        <button type="button" id="start-quiz"
+          class="w-full inline-flex items-center justify-center gap-2 px-7 py-4 bg-white text-ink text-base font-bold rounded-full hover:bg-slate-200 transition-colors">
+          無料で診断をはじめる
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+        <p class="text-xs text-slate-500 mt-5">登録不要ですぐに始められます。</p>
+      </div>
+    </section>
+
+    <!-- [2] 簡易診断（5問・1問1画面） -->
+    <section id="screen-quiz" class="hidden flex-1 flex items-center px-6 py-14 bg-gradient-to-b from-blue-950 to-slate-900">
+      <div class="max-w-md mx-auto w-full">
+        <!-- 進捗 -->
+        <div class="flex items-center justify-between mb-3">
+          <button type="button" id="quiz-back" class="text-xs text-slate-400 hover:text-white transition-colors invisible">‹ 戻る</button>
+          <span class="text-xs font-medium text-slate-400"><span id="quiz-counter">1</span> / 5</span>
         </div>
-        <a href="#waitlist" class="inline-flex items-center gap-2 px-7 py-3.5 bg-white text-ink text-sm font-bold rounded-full hover:bg-slate-200 transition-colors">
-          メールで先行登録する
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-        </a>
-        <p class="text-xs text-slate-500 mt-5">メールアドレスだけで30秒。リリース前の先行ユーザーを募集しています。</p>
+        <div class="h-1.5 w-full rounded-full bg-white/10 mb-10 overflow-hidden">
+          <div id="quiz-bar" class="h-full rounded-full bg-accent transition-all duration-300" style="width:20%"></div>
+        </div>
+
+        <h2 id="quiz-question" class="text-xl sm:text-2xl font-bold tracking-tight leading-snug mb-8"></h2>
+        <div id="quiz-options" class="space-y-3"></div>
       </div>
     </section>
 
-    <!-- 2. アプリでできること -->
-    <section class="px-6 sm:px-8 py-24 sm:py-28 bg-gradient-to-b from-blue-950 via-slate-600 to-slate-50">
-      <div class="max-w-2xl mx-auto">
-        <p class="reveal text-xs font-medium tracking-[0.3em] text-accent uppercase mb-4">What you can do</p>
-        <h2 class="reveal text-2xl sm:text-4xl font-black tracking-tight leading-snug mb-8 text-white">
-          1日で、<br>人生を棚卸しする。
-        </h2>
-        <p class="reveal text-slate-100 text-sm sm:text-base leading-relaxed mb-10">
-          質問に答えていくだけで、頭の中のモヤモヤを整理し、<br>
-          最後に「これからの自分の設計図」を作るアプリです。
-        </p>
-        <ul class="reveal grid sm:grid-cols-2 gap-3">
-          <li class="flex items-start gap-3 rounded-xl bg-slate-900/80 backdrop-blur px-4 py-3 text-sm text-white ring-1 ring-white/10"><span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0"></span>今の悩みを言葉にする</li>
-          <li class="flex items-start gap-3 rounded-xl bg-slate-900/80 backdrop-blur px-4 py-3 text-sm text-white ring-1 ring-white/10"><span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0"></span>繰り返す失敗パターンに気づく</li>
-          <li class="flex items-start gap-3 rounded-xl bg-slate-900/80 backdrop-blur px-4 py-3 text-sm text-white ring-1 ring-white/10"><span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0"></span>自分への思い込みを見直す</li>
-          <li class="flex items-start gap-3 rounded-xl bg-slate-900/80 backdrop-blur px-4 py-3 text-sm text-white ring-1 ring-white/10"><span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0"></span>大切にしたい価値観を決める</li>
-          <li class="flex items-start gap-3 rounded-xl bg-slate-900/80 backdrop-blur px-4 py-3 text-sm text-white ring-1 ring-accent/40 sm:col-span-2"><span class="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0"></span>明日からの小さな一歩に落とし込み、「人生の立て直しプラン」として保存する</li>
-        </ul>
-      </div>
-    </section>
+    <!-- [3] 結果 + [4] フル版ボタン -->
+    <section id="screen-result" class="hidden flex-1 px-6 py-16 bg-gradient-to-b from-slate-900 via-indigo-950 to-blue-950">
+      <div class="max-w-md mx-auto w-full">
+        <div class="text-center mb-8">
+          <p class="text-xs font-medium tracking-[0.3em] text-accent uppercase mb-4">診断結果</p>
+          <p class="text-sm text-slate-400 mb-2">あなたのタイプは</p>
+          <h2 id="result-type" class="text-2xl sm:text-3xl font-black tracking-tight text-white"></h2>
+        </div>
+        <div id="result-insight" class="space-y-4 text-slate-200 text-sm sm:text-base leading-relaxed mb-10"></div>
 
-    <!-- 4. 先行登録フォーム -->
-    <section id="waitlist" class="px-6 sm:px-8 py-24 sm:py-32 bg-slate-50 text-slate-800">
-      <div class="max-w-md mx-auto">
-
-        <!-- STEP 1: メールアドレスのみ -->
-        <div id="step1">
-          <div class="text-center mb-8">
-            <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 mb-4">
-              先行ユーザーを募集中。
-            </h2>
-            <p class="text-slate-600 text-sm leading-relaxed">
-              リリース時にいちばん最初にご案内します。<br>
-              まずはメールアドレスだけ登録してください。
-            </p>
-          </div>
-
-          <!-- STEP1 送信先: GAS ウェブアプリ → スプレッドシート（処理は末尾の script） -->
-          <form id="lead-form" action="#" method="post" class="space-y-4">
-            <!-- スパム対策（ハニーポット） -->
-            <input type="text" name="company" id="company" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute; left:-9999px; opacity:0;">
-            <div>
-              <label for="email" class="sr-only">メールアドレス</label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                autocomplete="email"
-                placeholder="メールアドレスを入力"
-                class="w-full rounded-xl bg-white border border-slate-300 px-4 py-3.5 text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition">
-            </div>
-            <button
-              type="submit"
-              class="w-full inline-flex items-center justify-center gap-2 px-7 py-4 bg-slate-900 text-white text-base font-bold rounded-full hover:bg-slate-700 transition-colors">
-              無料で先行登録する
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            </button>
-            <p id="lead-note" class="hidden text-center text-sm text-red-600 font-medium"></p>
-          </form>
-
-          <p class="text-xs text-slate-400 mt-5 leading-relaxed text-center">
-            先行登録に費用はかかりません。<br>
-            メールアドレスはリリース案内・開発状況の共有にのみ使用します。
+        <!-- フル版（フェイクドア） -->
+        <div class="rounded-2xl bg-white/5 ring-1 ring-white/10 p-6 backdrop-blur">
+          <p class="text-xs text-accent font-semibold mb-2">ここまで無料。続きはフル版で。</p>
+          <p class="text-slate-200 text-sm leading-relaxed mb-1">
+            フル版では、あなた専用の<strong class="text-white">“立て直しプラン”</strong>が見られます。
           </p>
-        </div><!-- /#step1 -->
+          <p class="text-slate-400 text-xs leading-relaxed mb-5">
+            全12問の本診断 ＋ 具体的な30日アクション ＋ 結果の保存。
+          </p>
+          <button type="button" id="buy-intent"
+            class="w-full inline-flex flex-col items-center justify-center gap-0.5 px-6 py-4 bg-accent text-ink font-bold rounded-full hover:bg-indigo-300 transition-colors">
+            <span class="text-base">フル版であなた専用の“立て直しプラン”を見る</span>
+            <span class="text-xs font-semibold opacity-80">2,980円（買い切り）</span>
+          </button>
+          <p class="text-[11px] text-slate-500 mt-3 text-center">簡易診断と結果まではすべて無料です。</p>
+        </div>
+      </div>
+    </section>
 
-        <!-- STEP 2: 任意アンケート（メール登録後に表示） -->
-        <div id="step2" class="hidden">
-          <div class="text-center mb-8">
-            <span class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-indigo-100 mb-5">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </span>
-            <h2 class="text-xl sm:text-2xl font-black tracking-tight text-slate-900 mb-3">
-              登録ありがとうございます！
-            </h2>
-            <p class="text-slate-600 text-sm leading-relaxed">
-              よければ、よりあなたに合ったアプリにするための<br>
-              アンケートにご協力ください。<span class="text-slate-400">（任意・30秒）</span>
-            </p>
-          </div>
-
-          <form id="survey-form" action="#" method="post" class="space-y-6">
-            <!-- 年齢 -->
-            <div>
-              <label for="age" class="block text-sm font-semibold text-slate-700 mb-2">年齢</label>
-              <select
-                id="age"
-                name="age"
-                class="w-full rounded-xl bg-white border border-slate-300 px-4 py-3 text-base sm:text-sm text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition">
-                <option value="">選択してください</option>
-                <option value="18-22">18〜22歳</option>
-                <option value="23-27">23〜27歳</option>
-                <option value="28-34">28〜34歳</option>
-                <option value="35-44">35〜44歳</option>
-                <option value="45+">45歳以上</option>
-              </select>
-            </div>
-
-            <!-- 使用端末 -->
-            <div>
-              <span class="block text-sm font-semibold text-slate-700 mb-2">普段お使いのスマートフォン</span>
-              <div class="grid grid-cols-2 gap-2">
-                <label class="flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 cursor-pointer hover:border-indigo-400 transition"><input type="radio" name="device" value="iOS" class="accent-indigo-500"> iPhone（iOS）</label>
-                <label class="flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 cursor-pointer hover:border-indigo-400 transition"><input type="radio" name="device" value="Android" class="accent-indigo-500"> Android</label>
-              </div>
-            </div>
-
-            <!-- 今、一番立て直したいこと -->
-            <div>
-              <span class="block text-sm font-semibold text-slate-700 mb-2">今、一番立て直したいこと <span class="text-slate-400 font-normal">（複数選択可）</span></span>
-              <div class="grid grid-cols-2 gap-2">
-                <label class="flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 cursor-pointer hover:border-indigo-400 transition"><input type="checkbox" name="rebuild" value="仕事・キャリア" class="accent-indigo-500"> 仕事・キャリア</label>
-                <label class="flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 cursor-pointer hover:border-indigo-400 transition"><input type="checkbox" name="rebuild" value="お金" class="accent-indigo-500"> お金</label>
-                <label class="flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 cursor-pointer hover:border-indigo-400 transition"><input type="checkbox" name="rebuild" value="生活習慣" class="accent-indigo-500"> 生活習慣</label>
-                <label class="flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 cursor-pointer hover:border-indigo-400 transition"><input type="checkbox" name="rebuild" value="人間関係" class="accent-indigo-500"> 人間関係</label>
-                <label class="flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 cursor-pointer hover:border-indigo-400 transition"><input type="checkbox" name="rebuild" value="恋愛・結婚" class="accent-indigo-500"> 恋愛・結婚</label>
-                <label class="flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 cursor-pointer hover:border-indigo-400 transition"><input type="checkbox" name="rebuild" value="メンタル" class="accent-indigo-500"> メンタル</label>
-                <label class="flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 cursor-pointer hover:border-indigo-400 transition"><input type="checkbox" name="rebuild" value="将来への不安" class="accent-indigo-500"> 将来への不安</label>
-                <label class="flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 cursor-pointer hover:border-indigo-400 transition"><input type="checkbox" name="rebuild" value="自分への自信" class="accent-indigo-500"> 自分への自信</label>
-                <label class="flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-700 cursor-pointer hover:border-indigo-400 transition col-span-2"><input type="checkbox" name="rebuild" value="その他" class="accent-indigo-500"> その他</label>
-              </div>
-            </div>
-
-            <!-- 価格許容度 -->
-            <div>
-              <label for="price" class="block text-sm font-semibold text-slate-700 mb-2">買い切りなら、どの価格帯なら試しやすいですか？</label>
-              <select
-                id="price"
-                name="price"
-                class="w-full rounded-xl bg-white border border-slate-300 px-4 py-3 text-base sm:text-sm text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition">
-                <option value="">選択してください</option>
-                <option value="<500">500円未満</option>
-                <option value="500-1000">500〜1,000円</option>
-                <option value="1000-2000">1,000〜2,000円</option>
-                <option value="2000-3000">2,000〜3,000円</option>
-                <option value="3000-5000">3,000〜5,000円</option>
-                <option value="5000+">5,000円以上でも内容次第</option>
-              </select>
-            </div>
-
-            <!-- 具体的な悩み -->
-            <div>
-              <label for="worry" class="block text-sm font-semibold text-slate-700 mb-2">よければ、今の悩みを少しだけ教えてください</label>
-              <textarea
-                id="worry"
-                name="worry"
-                rows="3"
-                placeholder="例：仕事を続けるべきか分からない、休日を無駄にしてしまう、自分に自信が持てない、など"
-                class="w-full rounded-xl bg-white border border-slate-300 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition resize-y"></textarea>
-            </div>
-
-            <button
-              type="submit"
-              class="w-full inline-flex items-center justify-center gap-2 px-7 py-4 bg-slate-900 text-white text-sm font-bold rounded-full hover:bg-slate-700 transition-colors">
-              回答を送信する
-            </button>
-            <button type="button" id="survey-skip" class="w-full text-center text-sm text-slate-500 hover:text-slate-800 transition-colors py-2">
-              スキップする
-            </button>
-          </form>
-        </div><!-- /#step2 -->
-
-        <!-- 完了メッセージ -->
-        <div id="thanks" class="hidden text-center py-6">
+    <!-- 肩透かし（正直な打ち明け）+ メール登録 -->
+    <section id="screen-fakedoor" class="hidden flex-1 px-6 py-16 bg-slate-50 text-slate-800">
+      <div class="max-w-md mx-auto w-full">
+        <div class="text-center mb-8">
           <span class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-indigo-100 mb-6">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4"/><path d="M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg>
           </span>
-          <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 mb-6">ご登録ありがとうございます。</h2>
-          <div class="space-y-4 text-slate-600 text-sm sm:text-base leading-relaxed">
-            <p>
-              先行ユーザーとして、無事に登録を受け付けました。<br>
-              リリースの準備が整いましたら、ご登録のメールアドレスへ、<br>
-              いちばん最初にご案内をお届けします。
-            </p>
-            <p class="text-slate-800 font-medium">
-              どうぞ、リリースを楽しみにお待ちください。
-            </p>
+          <h2 class="text-2xl font-black tracking-tight text-slate-900 mb-5">
+            ありがとうございます。
+          </h2>
+          <div class="space-y-4 text-slate-600 text-sm sm:text-base leading-relaxed text-left">
+            <p>正直にお伝えすると、このアプリは<strong class="text-slate-900">まだ開発中</strong>です。</p>
+            <p>“お金を払ってでも欲しい”と思っていただけたこと自体が、開発を進める一番の後押しになります。</p>
+            <p>完成したら、<strong class="text-slate-900">いちばん最初に・先行価格で</strong>ご案内します。よければメールを登録してください。</p>
           </div>
         </div>
 
-        <p class="text-xs text-slate-400 mt-10 leading-relaxed text-center">
-          ※本アプリは現在企画・開発検討中です。開発上の都合により、リリースを見送る場合があります。あらかじめご了承ください。
+        <form id="lead-form" action="#" method="post" class="space-y-4">
+          <!-- ハニーポット -->
+          <input type="text" name="company" id="company" autocomplete="off" tabindex="-1" aria-hidden="true" style="position:absolute; left:-9999px; opacity:0;">
+          <div>
+            <label for="email" class="sr-only">メールアドレス</label>
+            <input
+              id="email" name="email" type="email" required autocomplete="email"
+              placeholder="メールアドレスを入力"
+              class="w-full rounded-xl bg-white border border-slate-300 px-4 py-3.5 text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition">
+          </div>
+          <button type="submit"
+            class="w-full inline-flex items-center justify-center gap-2 px-7 py-4 bg-slate-900 text-white text-base font-bold rounded-full hover:bg-slate-700 transition-colors">
+            先行登録する
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
+          <p id="lead-note" class="hidden text-center text-sm text-red-600 font-medium"></p>
+        </form>
+        <p class="text-xs text-slate-400 mt-5 leading-relaxed text-center">
+          先行登録に費用はかかりません。<br>
+          メールアドレスはリリース案内・開発状況の共有にのみ使用します。
         </p>
+      </div>
+    </section>
+
+    <!-- [5] サンクス -->
+    <section id="screen-thanks" class="hidden flex-1 flex items-center px-6 py-16 bg-slate-50 text-slate-800">
+      <div class="max-w-md mx-auto w-full text-center">
+        <span class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-indigo-100 mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </span>
+        <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 mb-6">ご登録ありがとうございます。</h2>
+        <div class="space-y-4 text-slate-600 text-sm sm:text-base leading-relaxed">
+          <p>
+            先行ユーザーとして、無事に登録を受け付けました。<br>
+            リリースの準備が整いましたら、ご登録のメールアドレスへ、<br>
+            いちばん最初に・先行価格でご案内します。
+          </p>
+          <p class="text-slate-800 font-medium">どうぞ、リリースを楽しみにお待ちください。</p>
+        </div>
       </div>
     </section>
 
   </main>
 
   <!-- Footer -->
-  <footer class="py-12 px-6 sm:px-8 bg-slate-50 border-t border-slate-200">
-    <div class="max-w-2xl mx-auto text-center space-y-5">
-      <p class="text-xs text-slate-500 leading-relaxed">
-        開発中のアプリです。<br>
+  <footer class="py-10 px-6 bg-slate-50 border-t border-slate-200">
+    <div class="max-w-md mx-auto text-center space-y-4">
+      <p class="text-[11px] text-slate-400 leading-relaxed">
+        本アプリは現在企画・開発検討中です。開発状況により、リリースを見送る場合があります。<br>
         登録いただいたメールアドレスは、リリース案内および開発状況の共有にのみ使用します。
       </p>
-      <div class="flex flex-wrap justify-center gap-4 text-sm text-slate-500 pt-2">
+      <div class="flex flex-wrap justify-center gap-4 text-sm text-slate-500 pt-1">
         <a href="../privacy.html" class="hover:text-slate-900 transition-colors">プライバシーポリシー</a>
         <span class="text-slate-300">|</span>
         <a href="../terms.html" class="hover:text-slate-900 transition-colors">利用規約</a>
@@ -293,144 +214,283 @@
   </footer>
 
   <script>
-    // Scroll reveal
-    (function () {
-      var els = document.querySelectorAll('.reveal');
-      if (!('IntersectionObserver' in window)) {
-        els.forEach(function (el) { el.classList.add('in'); });
-        return;
+  (function () {
+    var GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyaYz_gtdBJgqrXM2voFUj2vKuQUjdFQvYrbJUlO24hIsHIQcNYoHJMuBMcXeVQNyIn1w/exec';
+
+    // ---- 訪問者ID（ユニークユーザー識別用。localStorageに永続化） ----
+    function getClientId() {
+      try {
+        var key = 'av_cid';
+        var id = localStorage.getItem(key);
+        if (!id) {
+          id = (window.crypto && crypto.randomUUID)
+            ? crypto.randomUUID()
+            : (Date.now().toString(36) + '-' + Math.random().toString(36).slice(2));
+          localStorage.setItem(key, id);
+        }
+        return id;
+      } catch (e) {
+        // プライベートモード等でlocalStorage不可な場合はセッション内一時ID
+        return 'tmp-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
       }
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) {
-          if (e.isIntersecting) {
-            e.target.classList.add('in');
-            io.unobserve(e.target);
+    }
+
+    // ---- 流入情報（全ステージ共通） ----
+    var params = new URLSearchParams(window.location.search);
+    var meta = {
+      client_id: getClientId(),
+      utm_source: params.get('utm_source') || '',
+      utm_medium: params.get('utm_medium') || '',
+      utm_campaign: params.get('utm_campaign') || '',
+      utm_content: params.get('utm_content') || '',
+      page_url: window.location.href,
+      user_agent: navigator.userAgent,
+      referrer: document.referrer || ''
+    };
+
+    function post(payload) {
+      return fetch(GAS_ENDPOINT, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload)
+      }).catch(function (e) { console.error(e); }); // 失敗してもUXは止めない
+    }
+
+    function track(event) {
+      if (typeof ttq !== 'undefined') { ttq.track(event); }
+    }
+
+    // ---- 画面切り替え ----
+    var screens = {
+      hero: document.getElementById('screen-hero'),
+      quiz: document.getElementById('screen-quiz'),
+      result: document.getElementById('screen-result'),
+      fakedoor: document.getElementById('screen-fakedoor'),
+      thanks: document.getElementById('screen-thanks')
+    };
+    function show(name) {
+      Object.keys(screens).forEach(function (k) {
+        screens[k].classList.toggle('hidden', k !== name);
+      });
+      var el = screens[name];
+      el.classList.remove('fade-in');
+      void el.offsetWidth; // reflow でアニメ再生
+      el.classList.add('fade-in');
+      window.scrollTo(0, 0);
+    }
+
+    // ---- 診断データ（各選択肢の type: B=燃え尽き / S=停滞 / D=方向喪失 / A=不安先行） ----
+    var QUESTIONS = [
+      {
+        q: '最近のあなたに一番近いのは？',
+        options: [
+          { label: '走り続けて、少し疲れている', type: 'B' },
+          { label: 'やる気はあるのに、足踏みしている', type: 'S' },
+          { label: '何を頑張ればいいのか分からない', type: 'D' },
+          { label: '理由はないけど、ずっと不安', type: 'A' }
+        ]
+      },
+      {
+        q: '“変わりたい”と思って、実際どうなった？',
+        options: [
+          { label: '頑張りすぎて、息切れした', type: 'B' },
+          { label: '何度も三日坊主で終わった', type: 'S' },
+          { label: 'そもそも何を変えるか決められない', type: 'D' },
+          { label: '動く前に、不安で立ち止まる', type: 'A' }
+        ]
+      },
+      {
+        q: 'いま一番モヤモヤしているのは？',
+        options: [
+          { label: '仕事・キャリアの疲れ', type: 'B' },
+          { label: '生活習慣・自分の行動', type: 'S' },
+          { label: 'お金や将来の方向性', type: 'D' },
+          { label: '人間関係・恋愛', type: 'A' }
+        ]
+      },
+      {
+        q: '休みの日、終わったあとの気分は？',
+        options: [
+          { label: 'ぐったりして、休んだ気がしない', type: 'B' },
+          { label: '何もできず、自己嫌悪', type: 'S' },
+          { label: '結局なにがしたいのか分からない', type: 'D' },
+          { label: '来週が来るのが、少し怖い', type: 'A' }
+        ]
+      },
+      {
+        q: '1年後の自分を想像すると？',
+        options: [
+          { label: 'このペースだと、持たない気がする', type: 'B' },
+          { label: '今と同じ気がして、怖い', type: 'S' },
+          { label: '変えたいが、方法が分からない', type: 'D' },
+          { label: '良くなっている自信がない', type: 'A' }
+        ]
+      }
+    ];
+
+    var RESULTS = {
+      B: {
+        name: '燃え尽き予備軍',
+        insight: [
+          'あなたは怠けているのではなく、ここまで走り続けて少し疲れているだけ。',
+          '動けないのは気力切れのサインで、あなたが変われないのは「意志が弱いから」ではなく、休む前に次を求めすぎているからかもしれません。',
+          '必要なのは“もっと頑張る”ことではなく、一度立ち止まって整理すること。そこからなら、立て直せます。'
+        ]
+      },
+      S: {
+        name: '先延ばし型の停滞',
+        insight: [
+          '変わりたい気持ちは本物。でも「いつか」が続いて、足踏みしている状態です。',
+          'あなたが動けないのは意志が弱いからではなく、最初の一歩を大きく設定しすぎているからかもしれません。',
+          '小さく区切れば、止まっていた足はまた動き出します。立て直せます。'
+        ]
+      },
+      D: {
+        name: '方向さがし中',
+        insight: [
+          '何かを変えたいのに、何を変えればいいのかが見えていない状態です。',
+          'あなたが動けないのは能力の問題ではなく、向かう先がまだ言葉になっていないから。地図がなければ、どんなに足が速くても進めません。',
+          '行き先さえ言葉にできれば、あなたは動ける人です。立て直せます。'
+        ]
+      },
+      A: {
+        name: '不安先行型',
+        insight: [
+          '先のことを考えると、理由のはっきりしない不安が先に立つ。そんな状態です。',
+          'あなたが動けないのは弱さではなく、頭の中の不安がまだ整理されていないから。正体の見えない不安は、実際より大きく感じます。',
+          '不安を一つずつ言葉にできれば、足は軽くなります。立て直せます。'
+        ]
+      }
+    };
+
+    // ---- 診断状態 ----
+    var answers = [];       // [{q, label, type}]
+    var current = 0;
+    var resultType = '';
+
+    var elCounter = document.getElementById('quiz-counter');
+    var elBar = document.getElementById('quiz-bar');
+    var elQuestion = document.getElementById('quiz-question');
+    var elOptions = document.getElementById('quiz-options');
+    var elBack = document.getElementById('quiz-back');
+
+    function renderQuestion(i) {
+      current = i;
+      var item = QUESTIONS[i];
+      elCounter.textContent = (i + 1);
+      elBar.style.width = ((i + 1) / QUESTIONS.length * 100) + '%';
+      elQuestion.textContent = item.q;
+      elBack.classList.toggle('invisible', i === 0);
+
+      elOptions.innerHTML = '';
+      item.options.forEach(function (opt) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'w-full text-left rounded-xl bg-white/5 ring-1 ring-white/10 px-5 py-4 text-sm sm:text-base text-slate-100 hover:bg-white/10 hover:ring-accent/50 active:scale-[0.99] transition';
+        var selected = answers[i] && answers[i].label === opt.label;
+        if (selected) { btn.className += ' ring-accent bg-accent/10'; }
+        btn.textContent = opt.label;
+        btn.addEventListener('click', function () {
+          answers[i] = { q: item.q, label: opt.label, type: opt.type };
+          if (i + 1 < QUESTIONS.length) {
+            renderQuestion(i + 1);
+          } else {
+            finishQuiz();
           }
         });
-      }, { threshold: 0.15 });
-      els.forEach(function (el) { io.observe(el); });
-    })();
+        elOptions.appendChild(btn);
+      });
+    }
 
-    // フォーム送信 → GAS ウェブアプリ（→ スプレッドシート）
-    (function () {
-      var GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyaYz_gtdBJgqrXM2voFUj2vKuQUjdFQvYrbJUlO24hIsHIQcNYoHJMuBMcXeVQNyIn1w/exec';
+    elBack.addEventListener('click', function () {
+      if (current > 0) { renderQuestion(current - 1); }
+    });
 
-      var leadForm = document.getElementById('lead-form');
-      var surveyForm = document.getElementById('survey-form');
-      var leadNote = document.getElementById('lead-note');
-      var skipBtn = document.getElementById('survey-skip');
+    function computeType() {
+      var tally = { B: 0, S: 0, D: 0, A: 0 };
+      answers.forEach(function (a) { if (a && tally.hasOwnProperty(a.type)) { tally[a.type]++; } });
+      var order = ['B', 'S', 'D', 'A']; // 同点時の優先順
+      var best = order[0];
+      order.forEach(function (t) { if (tally[t] > tally[best]) { best = t; } });
+      return best;
+    }
 
-      if (!leadForm) return;
+    function answersForPost() {
+      // フラットに送る（GASが配列を取りこぼしてもよいよう文字列化）
+      return JSON.stringify(answers.map(function (a) { return a ? a.label : ''; }));
+    }
 
-      // 流入情報（UTM等）は両ステップで共有
-      var params = new URLSearchParams(window.location.search);
-      var meta = {
-        utm_source: params.get('utm_source') || '',
-        utm_medium: params.get('utm_medium') || '',
-        utm_campaign: params.get('utm_campaign') || '',
-        utm_content: params.get('utm_content') || '',
-        page_url: window.location.href,
-        user_agent: navigator.userAgent,
-        referrer: document.referrer || ''
-      };
+    function finishQuiz() {
+      resultType = computeType();
+      var r = RESULTS[resultType];
 
-      var submittedEmail = '';
-
-      function post(payload) {
-        return fetch(GAS_ENDPOINT, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify(payload)
-        });
-      }
-
-      function showThanks() {
-        document.getElementById('step2').classList.add('hidden');
-        document.getElementById('thanks').classList.remove('hidden');
-        document.getElementById('waitlist').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-
-      // STEP 1: メールアドレスを送信 → 見込み顧客として記録
-      leadForm.addEventListener('submit', async function (e) {
-        e.preventDefault();
-        if (!leadForm.checkValidity()) {
-          leadForm.reportValidity();
-          return;
-        }
-
-        var btn = leadForm.querySelector('button[type="submit"]');
-        btn.disabled = true;
-        btn.classList.add('opacity-60', 'cursor-not-allowed');
-        leadNote.classList.add('hidden');
-
-        submittedEmail = leadForm.email.value;
-
-        var payload = Object.assign({
-          stage: 'lead',
-          email: submittedEmail,
-          company: leadForm.company ? leadForm.company.value : ''
-        }, meta);
-
-        try {
-          await post(payload);
-
-          // TikTok Pixel: 先行登録（メール取得）を計測
-          if (typeof ttq !== 'undefined') {
-            ttq.track('SubmitForm');
-          }
-
-          // STEP 2（任意アンケート）へ
-          document.getElementById('step1').classList.add('hidden');
-          document.getElementById('step2').classList.remove('hidden');
-          document.getElementById('waitlist').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } catch (error) {
-          console.error(error);
-          leadNote.textContent = '送信に失敗しました。時間をおいて再度お試しください。';
-          leadNote.classList.remove('hidden');
-          btn.disabled = false;
-          btn.classList.remove('opacity-60', 'cursor-not-allowed');
-        }
+      document.getElementById('result-type').textContent = r.name;
+      var insight = document.getElementById('result-insight');
+      insight.innerHTML = '';
+      r.insight.forEach(function (line, idx) {
+        var p = document.createElement('p');
+        if (idx === r.insight.length - 1) { p.className = 'text-white font-medium'; }
+        p.textContent = line;
+        insight.appendChild(p);
       });
 
-      // STEP 2: 任意アンケートを送信（メールはSTEP1で取得済み）
-      if (surveyForm) {
-        surveyForm.addEventListener('submit', async function (e) {
-          e.preventDefault();
+      post(Object.assign({
+        stage: 'quiz_complete',
+        result_type: resultType,
+        answers: answersForPost()
+      }, meta));
 
-          var btn = surveyForm.querySelector('button[type="submit"]');
-          btn.disabled = true;
-          btn.classList.add('opacity-60', 'cursor-not-allowed');
+      show('result');
+    }
 
-          var rebuildValues = Array.prototype.filter.call(
-            surveyForm.querySelectorAll('input[name="rebuild"]'),
-            function (el) { return el.checked; }
-          ).map(function (el) { return el.value; });
+    // ---- [1] 診断開始 ----
+    document.getElementById('start-quiz').addEventListener('click', function () {
+      answers = [];
+      post(Object.assign({ stage: 'quiz_start' }, meta));
+      track('ViewContent');
+      renderQuestion(0);
+      show('quiz');
+    });
 
-          var payload = Object.assign({
-            stage: 'survey',
-            email: submittedEmail,
-            age: surveyForm.age ? surveyForm.age.value : '',
-            device: surveyForm.device ? surveyForm.device.value : '',
-            rebuild: rebuildValues,
-            price: surveyForm.price ? surveyForm.price.value : '',
-            worry: surveyForm.worry ? surveyForm.worry.value : ''
-          }, meta);
+    // ---- [4] フル版ボタン（buy_intent・最重要シグナル） ----
+    document.getElementById('buy-intent').addEventListener('click', function () {
+      post(Object.assign({
+        stage: 'buy_intent',
+        result_type: resultType,
+        price: 2980,
+        answers: answersForPost()
+      }, meta));
+      track('AddToCart');
+      show('fakedoor');
+    });
 
-          try {
-            await post(payload);
-          } catch (error) {
-            console.error(error);
-          }
-          showThanks();
-        });
+    // ---- メール登録（lead） ----
+    var leadForm = document.getElementById('lead-form');
+    var leadNote = document.getElementById('lead-note');
+    leadForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      if (!leadForm.checkValidity()) { leadForm.reportValidity(); return; }
+      if (leadForm.company && leadForm.company.value) { return; } // honeypot
 
-        // スキップする（送信せず完了画面へ。メールはSTEP1で取得済み）
-        if (skipBtn) {
-          skipBtn.addEventListener('click', showThanks);
-        }
-      }
-    })();
+      var btn = leadForm.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      btn.classList.add('opacity-60', 'cursor-not-allowed');
+      leadNote.classList.add('hidden');
+
+      await post(Object.assign({
+        stage: 'lead',
+        email: leadForm.email.value,
+        result_type: resultType,
+        buy_intent: true,
+        answers: answersForPost(),
+        company: leadForm.company ? leadForm.company.value : ''
+      }, meta));
+
+      track('SubmitForm');
+      show('thanks');
+    });
+  })();
   </script>
 </body>
 </html>
