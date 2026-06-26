@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <!--
-  人生立て直しアプリ LP（フェイクドア型・買い切り需要検証）
-  変更点:
-   - 詩的コピー型LP → 5ステップの簡易診断フローに刷新
-     [1]ヒーロー(診断誘導) → [2]5問診断(1問1画面) → [3]結果(タイプ判定)
-     → [4]フル版2,980円ボタン → 決済せず正直に開発中と明かす + メール登録 → [5]サンクス
-   - 決済は一切実装しない(フェイクドア)。価格ボタンのタップで肩透かし+正直な打ち明け。
-   - GASは既存 post()/mode:no-cors/stage パターンを踏襲。stage: quiz_start/quiz_complete/buy_intent/lead。
-   - Clarity / TikTok Pixel は既存のまま維持。TikTokは ViewContent→AddToCart→SubmitForm を発火。
+  1日で人生を立て直すアプリ LP（先行登録・需要検証）
+  構成: [1]ヒーロー → [2]メール登録 → [3]サンクス の3画面。
+   - 流入元のTikTok動画の"続き"として接続する情緒的コピー。診断・購入は扱わない。
+   - メール登録時に GAS post(stage: lead) / mode:no-cors。
+   - Clarity / TikTok Pixel は維持。TikTokは登録完了時に SubmitForm を発火。
 -->
 <html lang="ja" class="scroll-smooth">
 <head>
@@ -34,10 +31,10 @@
   }(window, document, 'ttq');
   </script>
   <!-- TikTok Pixel Code End -->
-  <title>30秒の無料診断 - あなたが変われない本当の理由</title>
-  <meta name="description" content="5つの質問に答えるだけ。あなたが“変われない本当の理由”が30秒でわかる無料診断。スマホだけで完結します。">
-  <meta property="og:title" content="あなたが“変われない本当の理由”がわかる無料診断">
-  <meta property="og:description" content="5つの質問に答えるだけ・所要1分・無料。スマホだけで完結します。">
+  <title>1日で人生を立て直すアプリ - 先行登録受付中</title>
+  <meta name="description" content="一気に変えなくていい。今夜から、少しずつ立て直す。1日で人生を立て直すアプリ、先行登録受付中。完成したら、いちばん最初にお知らせします。">
+  <meta property="og:title" content="一気に変えなくていい。今夜から、少しずつ立て直す。">
+  <meta property="og:description" content="1日で人生を立て直すアプリ、先行登録受付中。完成したら、いちばん最初にお知らせします。">
   <meta property="og:type" content="website">
   <link rel="icon" type="image/svg+xml" href="../icon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -71,84 +68,37 @@
     <!-- [1] ヒーロー -->
     <section id="screen-hero" class="flex-1 flex items-center px-6 py-16 bg-gradient-to-b from-ink via-ink to-blue-950">
       <div class="max-w-md mx-auto w-full text-center">
-        <p class="text-xs font-medium tracking-[0.3em] text-accent uppercase mb-6">Self Reset 診断</p>
-        <h1 class="text-3xl sm:text-4xl font-black tracking-tight leading-[1.35] mb-6">
-          5つの質問で、<br>
-          あなたが<span class="text-accent">“変われない本当の理由”</span>がわかる。
+        <p class="text-xs font-medium tracking-[0.3em] text-accent uppercase mb-6">1日で人生を立て直すアプリ</p>
+        <h1 class="text-3xl sm:text-4xl font-black tracking-tight leading-[1.4] mb-6">
+          一気に変えなくていい。<br>
+          今夜から、<span class="text-accent">少しずつ立て直す。</span>
         </h1>
         <p class="text-slate-300 text-base leading-relaxed mb-10">
-          所要1分・無料。<br>スマホだけで完結します。
+          このまま、行きたくない未来へ進みたくない。<br>
+          そう思えたなら、もう半分は動き出しています。<br>
+          完成したら、いちばん最初にお知らせします。
         </p>
-        <button type="button" id="start-quiz"
+        <button type="button" id="go-lead"
           class="w-full inline-flex items-center justify-center gap-2 px-7 py-4 bg-white text-ink text-base font-bold rounded-full hover:bg-slate-200 transition-colors">
-          無料で診断をはじめる
+          先行登録する（無料）
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </button>
-        <p class="text-xs text-slate-500 mt-5">登録不要ですぐに始められます。</p>
+        <p class="text-xs text-slate-500 mt-5">登録は30秒。費用はかかりません。</p>
       </div>
     </section>
 
-    <!-- [2] 簡易診断（5問・1問1画面） -->
-    <section id="screen-quiz" class="hidden flex-1 flex items-center px-6 py-14 bg-gradient-to-b from-blue-950 to-slate-900">
-      <div class="max-w-md mx-auto w-full">
-        <!-- 進捗 -->
-        <div class="flex items-center justify-between mb-3">
-          <button type="button" id="quiz-back" class="text-xs text-slate-400 hover:text-white transition-colors invisible">‹ 戻る</button>
-          <span class="text-xs font-medium text-slate-400"><span id="quiz-counter">1</span> / 5</span>
-        </div>
-        <div class="h-1.5 w-full rounded-full bg-white/10 mb-10 overflow-hidden">
-          <div id="quiz-bar" class="h-full rounded-full bg-accent transition-all duration-300" style="width:20%"></div>
-        </div>
-
-        <h2 id="quiz-question" class="text-xl sm:text-2xl font-bold tracking-tight leading-snug mb-8"></h2>
-        <div id="quiz-options" class="space-y-3"></div>
-      </div>
-    </section>
-
-    <!-- [3] 結果 + [4] フル版ボタン -->
-    <section id="screen-result" class="hidden flex-1 px-6 py-16 bg-gradient-to-b from-slate-900 via-indigo-950 to-blue-950">
+    <!-- [2] メール登録 -->
+    <section id="screen-lead" class="hidden flex-1 flex items-center px-6 py-16 bg-gradient-to-b from-blue-950 via-indigo-950 to-slate-900">
       <div class="max-w-md mx-auto w-full">
         <div class="text-center mb-8">
-          <p class="text-xs font-medium tracking-[0.3em] text-accent uppercase mb-4">診断結果</p>
-          <p class="text-sm text-slate-400 mb-2">あなたのタイプは</p>
-          <h2 id="result-type" class="text-2xl sm:text-3xl font-black tracking-tight text-white"></h2>
-        </div>
-        <div id="result-insight" class="space-y-4 text-slate-200 text-sm sm:text-base leading-relaxed mb-10"></div>
-
-        <!-- フル版（フェイクドア） -->
-        <div class="rounded-2xl bg-white/5 ring-1 ring-white/10 p-6 backdrop-blur">
-          <p class="text-xs text-accent font-semibold mb-2">ここまで無料。続きはフル版で。</p>
-          <p class="text-slate-200 text-sm leading-relaxed mb-1">
-            フル版では、あなた専用の<strong class="text-white">“立て直しプラン”</strong>が見られます。
-          </p>
-          <p class="text-slate-400 text-xs leading-relaxed mb-5">
-            全12問の本診断 ＋ 具体的な30日アクション ＋ 結果の保存。
-          </p>
-          <button type="button" id="buy-intent"
-            class="w-full inline-flex flex-col items-center justify-center gap-0.5 px-6 py-4 bg-accent text-ink font-bold rounded-full hover:bg-indigo-300 transition-colors">
-            <span class="text-base">フル版であなた専用の“立て直しプラン”を見る</span>
-            <span class="text-xs font-semibold opacity-80">2,980円（買い切り）</span>
-          </button>
-          <p class="text-[11px] text-slate-500 mt-3 text-center">簡易診断と結果まではすべて無料です。</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- 肩透かし（正直な打ち明け）+ メール登録 -->
-    <section id="screen-fakedoor" class="hidden flex-1 px-6 py-16 bg-slate-50 text-slate-800">
-      <div class="max-w-md mx-auto w-full">
-        <div class="text-center mb-8">
-          <span class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-indigo-100 mb-6">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4"/><path d="M12 16h.01"/><circle cx="12" cy="12" r="9"/></svg>
-          </span>
-          <h2 class="text-2xl font-black tracking-tight text-slate-900 mb-5">
-            ありがとうございます。
+          <p class="text-xs font-medium tracking-[0.3em] text-accent uppercase mb-4">先行登録受付中</p>
+          <h2 class="text-2xl sm:text-3xl font-black tracking-tight leading-snug mb-5">
+            完成したら、<br>あなたに最初に届けます。
           </h2>
-          <div class="space-y-4 text-slate-600 text-sm sm:text-base leading-relaxed text-left">
-            <p>正直にお伝えすると、このアプリは<strong class="text-slate-900">まだ開発中</strong>です。</p>
-            <p>“お金を払ってでも欲しい”と思っていただけたこと自体が、開発を進める一番の後押しになります。</p>
-            <p>完成したら、<strong class="text-slate-900">いちばん最初に・先行価格で</strong>ご案内します。よければメールを登録してください。</p>
-          </div>
+          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+            メールアドレスを登録するだけ。<br>
+            リリースが決まったら、いちばん最初にご案内します。
+          </p>
         </div>
 
         <form id="lead-form" action="#" method="post" class="space-y-4">
@@ -159,23 +109,23 @@
             <input
               id="email" name="email" type="email" required autocomplete="email"
               placeholder="メールアドレスを入力"
-              class="w-full rounded-xl bg-white border border-slate-300 px-4 py-3.5 text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition">
+              class="w-full rounded-xl bg-white/5 border border-white/15 px-4 py-3.5 text-base text-white placeholder:text-slate-400 focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/30 transition">
           </div>
           <button type="submit"
-            class="w-full inline-flex items-center justify-center gap-2 px-7 py-4 bg-slate-900 text-white text-base font-bold rounded-full hover:bg-slate-700 transition-colors">
-            先行登録する
+            class="w-full inline-flex items-center justify-center gap-2 px-7 py-4 bg-white text-ink text-base font-bold rounded-full hover:bg-slate-200 transition-colors">
+            先行登録する（無料）
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </button>
-          <p id="lead-note" class="hidden text-center text-sm text-red-600 font-medium"></p>
+          <p id="lead-note" class="hidden text-center text-sm text-red-400 font-medium"></p>
         </form>
-        <p class="text-xs text-slate-400 mt-5 leading-relaxed text-center">
+        <p class="text-xs text-slate-500 mt-5 leading-relaxed text-center">
           先行登録に費用はかかりません。<br>
           メールアドレスはリリース案内・開発状況の共有にのみ使用します。
         </p>
       </div>
     </section>
 
-    <!-- [5] サンクス -->
+    <!-- [3] サンクス -->
     <section id="screen-thanks" class="hidden flex-1 flex items-center px-6 py-16 bg-slate-50 text-slate-800">
       <div class="max-w-md mx-auto w-full text-center">
         <span class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-indigo-100 mb-6">
@@ -186,9 +136,9 @@
           <p>
             先行ユーザーとして、無事に登録を受け付けました。<br>
             リリースの準備が整いましたら、ご登録のメールアドレスへ、<br>
-            いちばん最初に・先行価格でご案内します。
+            いちばん最初にお知らせします。
           </p>
-          <p class="text-slate-800 font-medium">どうぞ、リリースを楽しみにお待ちください。</p>
+          <p class="text-slate-800 font-medium">今夜から、少しずつ。<br>どうぞ、リリースを楽しみにお待ちください。</p>
         </div>
       </div>
     </section>
@@ -264,9 +214,7 @@
     // ---- 画面切り替え ----
     var screens = {
       hero: document.getElementById('screen-hero'),
-      quiz: document.getElementById('screen-quiz'),
-      result: document.getElementById('screen-result'),
-      fakedoor: document.getElementById('screen-fakedoor'),
+      lead: document.getElementById('screen-lead'),
       thanks: document.getElementById('screen-thanks')
     };
     function show(name) {
@@ -280,189 +228,14 @@
       window.scrollTo(0, 0);
     }
 
-    // ---- 診断データ（各選択肢の type: B=燃え尽き / S=停滞 / D=方向喪失 / A=不安先行） ----
-    var QUESTIONS = [
-      {
-        q: '最近のあなたに一番近いのは？',
-        options: [
-          { label: '走り続けて、少し疲れている', type: 'B' },
-          { label: 'やる気はあるのに、足踏みしている', type: 'S' },
-          { label: '何を頑張ればいいのか分からない', type: 'D' },
-          { label: '理由はないけど、ずっと不安', type: 'A' }
-        ]
-      },
-      {
-        q: '“変わりたい”と思って、実際どうなった？',
-        options: [
-          { label: '頑張りすぎて、息切れした', type: 'B' },
-          { label: '何度も三日坊主で終わった', type: 'S' },
-          { label: 'そもそも何を変えるか決められない', type: 'D' },
-          { label: '動く前に、不安で立ち止まる', type: 'A' }
-        ]
-      },
-      {
-        q: 'いま一番モヤモヤしているのは？',
-        options: [
-          { label: '仕事・キャリアの疲れ', type: 'B' },
-          { label: '生活習慣・自分の行動', type: 'S' },
-          { label: 'お金や将来の方向性', type: 'D' },
-          { label: '人間関係・恋愛', type: 'A' }
-        ]
-      },
-      {
-        q: '休みの日、終わったあとの気分は？',
-        options: [
-          { label: 'ぐったりして、休んだ気がしない', type: 'B' },
-          { label: '何もできず、自己嫌悪', type: 'S' },
-          { label: '結局なにがしたいのか分からない', type: 'D' },
-          { label: '来週が来るのが、少し怖い', type: 'A' }
-        ]
-      },
-      {
-        q: '1年後の自分を想像すると？',
-        options: [
-          { label: 'このペースだと、持たない気がする', type: 'B' },
-          { label: '今と同じ気がして、怖い', type: 'S' },
-          { label: '変えたいが、方法が分からない', type: 'D' },
-          { label: '良くなっている自信がない', type: 'A' }
-        ]
-      }
-    ];
+    // ---- LP着地（ページ読み込み完了時に一度だけ） ----
+    post(Object.assign({ stage: 'page_view' }, meta));
 
-    var RESULTS = {
-      B: {
-        name: '燃え尽き予備軍',
-        insight: [
-          'あなたは怠けているのではなく、ここまで走り続けて少し疲れているだけ。',
-          '動けないのは気力切れのサインで、あなたが変われないのは「意志が弱いから」ではなく、休む前に次を求めすぎているからかもしれません。',
-          '必要なのは“もっと頑張る”ことではなく、一度立ち止まって整理すること。そこからなら、立て直せます。'
-        ]
-      },
-      S: {
-        name: '先延ばし型の停滞',
-        insight: [
-          '変わりたい気持ちは本物。でも「いつか」が続いて、足踏みしている状態です。',
-          'あなたが動けないのは意志が弱いからではなく、最初の一歩を大きく設定しすぎているからかもしれません。',
-          '小さく区切れば、止まっていた足はまた動き出します。立て直せます。'
-        ]
-      },
-      D: {
-        name: '方向さがし中',
-        insight: [
-          '何かを変えたいのに、何を変えればいいのかが見えていない状態です。',
-          'あなたが動けないのは能力の問題ではなく、向かう先がまだ言葉になっていないから。地図がなければ、どんなに足が速くても進めません。',
-          '行き先さえ言葉にできれば、あなたは動ける人です。立て直せます。'
-        ]
-      },
-      A: {
-        name: '不安先行型',
-        insight: [
-          '先のことを考えると、理由のはっきりしない不安が先に立つ。そんな状態です。',
-          'あなたが動けないのは弱さではなく、頭の中の不安がまだ整理されていないから。正体の見えない不安は、実際より大きく感じます。',
-          '不安を一つずつ言葉にできれば、足は軽くなります。立て直せます。'
-        ]
-      }
-    };
-
-    // ---- 診断状態 ----
-    var answers = [];       // [{q, label, type}]
-    var current = 0;
-    var resultType = '';
-
-    var elCounter = document.getElementById('quiz-counter');
-    var elBar = document.getElementById('quiz-bar');
-    var elQuestion = document.getElementById('quiz-question');
-    var elOptions = document.getElementById('quiz-options');
-    var elBack = document.getElementById('quiz-back');
-
-    function renderQuestion(i) {
-      current = i;
-      var item = QUESTIONS[i];
-      elCounter.textContent = (i + 1);
-      elBar.style.width = ((i + 1) / QUESTIONS.length * 100) + '%';
-      elQuestion.textContent = item.q;
-      elBack.classList.toggle('invisible', i === 0);
-
-      elOptions.innerHTML = '';
-      item.options.forEach(function (opt) {
-        var btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'w-full text-left rounded-xl bg-white/5 ring-1 ring-white/10 px-5 py-4 text-sm sm:text-base text-slate-100 hover:bg-white/10 hover:ring-accent/50 active:scale-[0.99] transition';
-        var selected = answers[i] && answers[i].label === opt.label;
-        if (selected) { btn.className += ' ring-accent bg-accent/10'; }
-        btn.textContent = opt.label;
-        btn.addEventListener('click', function () {
-          answers[i] = { q: item.q, label: opt.label, type: opt.type };
-          if (i + 1 < QUESTIONS.length) {
-            renderQuestion(i + 1);
-          } else {
-            finishQuiz();
-          }
-        });
-        elOptions.appendChild(btn);
-      });
-    }
-
-    elBack.addEventListener('click', function () {
-      if (current > 0) { renderQuestion(current - 1); }
-    });
-
-    function computeType() {
-      var tally = { B: 0, S: 0, D: 0, A: 0 };
-      answers.forEach(function (a) { if (a && tally.hasOwnProperty(a.type)) { tally[a.type]++; } });
-      var order = ['B', 'S', 'D', 'A']; // 同点時の優先順
-      var best = order[0];
-      order.forEach(function (t) { if (tally[t] > tally[best]) { best = t; } });
-      return best;
-    }
-
-    function answersForPost() {
-      // フラットに送る（GASが配列を取りこぼしてもよいよう文字列化）
-      return JSON.stringify(answers.map(function (a) { return a ? a.label : ''; }));
-    }
-
-    function finishQuiz() {
-      resultType = computeType();
-      var r = RESULTS[resultType];
-
-      document.getElementById('result-type').textContent = r.name;
-      var insight = document.getElementById('result-insight');
-      insight.innerHTML = '';
-      r.insight.forEach(function (line, idx) {
-        var p = document.createElement('p');
-        if (idx === r.insight.length - 1) { p.className = 'text-white font-medium'; }
-        p.textContent = line;
-        insight.appendChild(p);
-      });
-
-      post(Object.assign({
-        stage: 'quiz_complete',
-        result_type: resultType,
-        answers: answersForPost()
-      }, meta));
-
-      show('result');
-    }
-
-    // ---- [1] 診断開始 ----
-    document.getElementById('start-quiz').addEventListener('click', function () {
-      answers = [];
-      post(Object.assign({ stage: 'quiz_start' }, meta));
-      track('ViewContent');
-      renderQuestion(0);
-      show('quiz');
-    });
-
-    // ---- [4] フル版ボタン（buy_intent・最重要シグナル） ----
-    document.getElementById('buy-intent').addEventListener('click', function () {
-      post(Object.assign({
-        stage: 'buy_intent',
-        result_type: resultType,
-        price: 2980,
-        answers: answersForPost()
-      }, meta));
-      track('AddToCart');
-      show('fakedoor');
+    // ---- [1] → [2] 登録画面へ ----
+    document.getElementById('go-lead').addEventListener('click', function () {
+      post(Object.assign({ stage: 'go_lead_click' }, meta));
+      show('lead');
+      document.getElementById('email').focus();
     });
 
     // ---- メール登録（lead） ----
@@ -481,9 +254,6 @@
       await post(Object.assign({
         stage: 'lead',
         email: leadForm.email.value,
-        result_type: resultType,
-        buy_intent: true,
-        answers: answersForPost(),
         company: leadForm.company ? leadForm.company.value : ''
       }, meta));
 

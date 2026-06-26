@@ -6,15 +6,18 @@
  * → バージョン「新しいバージョン」→ デプロイ。初回は権限承認が必要。
  *
  * LP（index.html）は stage だけを送り、書き込み先シートは GAS が stage で振り分ける:
- *   quiz_start / quiz_complete / buy_intent → diagnostics シート（診断ファネル）
+ *   page_view / go_lead_click               → events シート（メール不要のファネル計測）
  *   lead                                    → leads シート（メール登録）
  *   honeypot / invalid_email / server_error → rejected シート（弾いた登録）
  */
 
 const SPREADSHEET_ID = '1EfK6O6Ni6vel0hUOv7ik-qhf58fiwLFmw-GCUNk1kJw';
-const LEADS_SHEET  = 'leads';        // メール登録（新規シート）
-const DIAG_SHEET   = 'diagnostics';  // 診断ファネル（新規シート）
+const LEADS_SHEET  = 'leads';        // メール登録
+const EVENTS_SHEET = 'events';       // メール不要のファネル計測（page_view / go_lead_click）
 const REJECT_SHEET = 'rejected';     // 弾いた登録
+
+// メール不要で記録するファネルイベント
+const EVENT_STAGES = ['page_view', 'go_lead_click'];
 
 function doPost(e) {
   const lock = LockService.getScriptLock();
@@ -32,9 +35,9 @@ function doPost(e) {
 
     const stage = sanitize(data.stage);
 
-    // 診断ファネル（メール不要）→ diagnostics シート
-    if (stage === 'quiz_start' || stage === 'quiz_complete' || stage === 'buy_intent') {
-      appendDiag_(data, body);
+    // ファネル計測（メール不要）→ events シート
+    if (EVENT_STAGES.indexOf(stage) !== -1) {
+      appendEvent_(data, body);
       return createJsonResponse({ ok: true });
     }
 
@@ -57,10 +60,10 @@ function doPost(e) {
   }
 }
 
-// --- 診断ファネルを diagnostics シートへ ---
-function appendDiag_(data, body) {
-  const sheet = getSheet_(DIAG_SHEET, [
-    'received_at', 'client_id', 'stage', 'result_type', 'price', 'answers',
+// --- ファネル計測を events シートへ ---
+function appendEvent_(data, body) {
+  const sheet = getSheet_(EVENTS_SHEET, [
+    'received_at', 'client_id', 'stage',
     'utm_source', 'utm_medium', 'utm_campaign', 'utm_content',
     'page_url', 'user_agent', 'referrer', 'raw_json'
   ]);
@@ -68,9 +71,6 @@ function appendDiag_(data, body) {
     new Date(),
     sanitize(data.client_id),
     sanitize(data.stage),
-    sanitize(data.result_type),
-    sanitize(data.price),
-    sanitize(data.answers),
     sanitize(data.utm_source),
     sanitize(data.utm_medium),
     sanitize(data.utm_campaign),
@@ -83,6 +83,8 @@ function appendDiag_(data, body) {
 }
 
 // --- メール登録を leads シートへ ---
+// 注: result_type / buy_intent / answers は旧診断フローの名残り。
+//     既存シートのヘッダー・行と列を揃えるため列構成は維持する（新LPでは空のまま）。
 function appendLead_(data, email, body) {
   const sheet = getSheet_(LEADS_SHEET, [
     'received_at', 'client_id', 'email', 'result_type', 'buy_intent', 'answers',
