@@ -1,109 +1,545 @@
 <!DOCTYPE html>
-<html lang="ja" class="scroll-smooth">
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Apps | SPONVITA</title>
-  <meta name="description" content="WordDrop - 読んだ本の一節や心に響いた言葉を、手軽に保存してホーム画面に飾るアプリ。">
+  <meta name="description" content="SPONVITA のアプリ一覧。WordDrop、Sponte、とめどき、スモゼロ、いぬ手帳。毎日の小さな行動を支えるアプリをつくっています。">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['"Noto Sans JP"', 'sans-serif'],
-          },
-          colors: {
-            navy: '#0f172a',
-            accent: '#2563eb',
-          },
-        },
-      },
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Zen+Kaku+Gothic+New:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #173a55;
+      --display: "Archivo Black", "Arial Black", sans-serif;
+      --display-jp: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
     }
-  </script>
+    * { box-sizing: border-box; }
+    html { scrollbar-gutter: stable; }
+    body {
+      margin: 0;
+      background: #e4f2fb;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+    a, button { -webkit-tap-highlight-color: transparent; }
+    button { font: inherit; color: inherit; cursor: pointer; }
+    a:focus-visible, button:focus-visible { outline: 3px solid currentColor; outline-offset: 6px; }
+    .skip { position: fixed; top: -80px; left: 20px; z-index: 60; background: #fff; padding: 12px; }
+    .skip:focus { top: 12px; }
+
+    /* ---------- Header ---------- */
+    .site-header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 30;
+      padding: 0 40px;
+      background: var(--head-bg, #e4f2fbef);
+      color: var(--head-color, #173a55);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition: background .25s, color .25s;
+    }
+    .header-inner {
+      height: 88px; max-width: 1600px; margin: auto;
+      display: flex; align-items: center; justify-content: space-between; gap: 24px;
+      border-bottom: 1px solid currentColor;
+    }
+    .brand { display: flex; align-items: center; gap: 2px; text-decoration: none; white-space: nowrap; }
+    .brand img { height: 36px; width: auto; transition: filter .25s; }
+    body[data-current="sponte"] .brand img,
+    body[data-current="tomedoki"] .brand img { filter: brightness(0) invert(1); }
+    .brand span { font-family: var(--display); font-size: 24px; letter-spacing: -.04em; }
+    .brand small { font-family: var(--display-jp); font-size: 15px; font-weight: 900; margin-left: 10px; letter-spacing: .02em; opacity: .75; }
+    .tagline { font-size: 15px; font-weight: 700; letter-spacing: .03em; margin: 0; }
+    .menu-wrap { position: relative; }
+    .menu-toggle {
+      border: 1px solid currentColor; border-radius: 99px; background: transparent;
+      padding: 10px 24px; font-size: 15px; font-weight: 750; white-space: nowrap;
+    }
+    .menu-toggle:hover { background: #ffffff35; }
+    .menu {
+      position: absolute; right: 0; top: calc(100% + 16px); width: 310px; padding: 10px;
+      border-radius: 22px; color: #25332c; background: #fff;
+      box-shadow: 0 16px 60px #172c2829; border: 1px solid #25332c15;
+    }
+    .menu[hidden] { display: none; }
+    .menu a {
+      display: flex; align-items: center; gap: 14px; padding: 12px;
+      text-decoration: none; border-radius: 14px; font-size: 15px; font-weight: 700;
+    }
+    .menu a:hover, .menu a[aria-current="true"] { background: #edf0e6; }
+    .menu img { width: 40px; height: 40px; border-radius: 11px; }
+    .menu .order { margin-left: auto; font-size: 11px; font-variant-numeric: tabular-nums; }
+
+    /* ---------- Chapters ---------- */
+    .chapter {
+      position: relative; isolation: isolate;
+      min-height: 100svh;
+      padding: 140px max(5vw, 40px) 178px;
+      overflow: hidden;
+      display: flex; align-items: center;
+      background: var(--bg); color: var(--color);
+      scroll-margin-top: 0;
+    }
+    .worddrop { --bg: #e4f2fb; --color: #173a55; --accent: #4fb0ea; --head-bg: #e4f2fbef; --dock-bg: #173a55; --dock-color: #fff; }
+    .sponte   { --bg: #2e3866; --color: #ffffff; --accent: #c7cff0; --head-bg: #2e3866ef; --dock-bg: #2e3866; --dock-color: #fff; }
+    .tomedoki { --bg: #161616; --color: #fff6e8; --accent: #ff8a1f; --head-bg: #161616ef; --dock-bg: #161616; --dock-color: #ff8a1f; }
+    .smozero  { --bg: #f1ece3; --color: #3e335e; --accent: #c99a4c; --head-bg: #f1ece3ef; --dock-bg: #3e335e; --dock-color: #fff; }
+    .inutecho { --bg: #f6e8d6; --color: #5a2d14; --accent: #8a4a22; --head-bg: #f6e8d6ef; --dock-bg: #5a2d14; --dock-color: #fff6ea; }
+
+    .chapter-inner {
+      width: 100%; max-width: 1440px; margin: auto;
+      display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 4vw; align-items: center;
+    }
+    .chapter.is-flipped .chapter-inner { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 5vw; }
+    .chapter.is-flipped .scene { order: -1; }
+    .copy { min-width: 0; position: relative; z-index: 2; }
+
+    .hero-title {
+      font-family: var(--display);
+      font-size: clamp(110px, 12.4vw, 190px);
+      font-weight: 400; letter-spacing: -.06em; line-height: .91;
+      margin: 0 0 36px;
+    }
+    .hero-title span { display: block; }
+    .hero-title .dot { display: inline; color: var(--accent); }
+    .sub-head {
+      font-family: var(--display-jp);
+      font-size: clamp(26px, 2.8vw, 42px); font-weight: 900;
+      line-height: 1.5; letter-spacing: -.03em; margin: 0 0 14px; white-space: nowrap;
+    }
+    .identity {
+      display: flex; align-items: center; gap: 16px; margin: 0 0 28px;
+      font-size: 25px; font-weight: 800; letter-spacing: -.02em;
+    }
+    .identity img { width: 62px; height: 62px; border-radius: 17px; }
+    .jp-head {
+      font-family: var(--display-jp);
+      font-size: clamp(62px, 7.2vw, 108px); font-weight: 900;
+      line-height: 1.3; letter-spacing: -.05em; margin: 0 0 26px;
+    }
+    .jp-head span { display: block; white-space: nowrap; }
+    .sponte .jp-head, .smozero .jp-head { font-size: clamp(52px, 6vw, 88px); }
+    .jp-head .em { color: var(--accent); }
+    .description {
+      font-size: clamp(14px, 1.15vw, 18px); font-weight: 550;
+      line-height: 1.95; letter-spacing: .01em; margin: 0 0 28px;
+    }
+    .actions { display: flex; align-items: center; flex-wrap: wrap; gap: 24px; }
+    .store {
+      display: inline-flex; align-items: center; justify-content: center; gap: 20px;
+      min-height: 60px; padding: 15px 30px; border-radius: 99px;
+      border: 1px solid transparent;
+      background: var(--color); color: var(--bg);
+      font-size: 18px; font-weight: 750; text-decoration: none; white-space: nowrap;
+      transition: transform .2s, box-shadow .2s;
+    }
+    a.store:hover { transform: translateY(-3px); box-shadow: 0 8px 0 #0000000f; }
+    .store.is-soon {
+      background: transparent; color: var(--color);
+      border: 1.5px dashed currentColor; cursor: default;
+      font-family: var(--display); font-weight: 400; letter-spacing: .02em;
+    }
+    .arrow { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+    /* ---------- Scene (icon visual) ---------- */
+    .scene {
+      position: relative; min-width: 0; width: 100%;
+      height: clamp(420px, 58svh, 620px);
+      display: grid; place-items: center; isolation: isolate;
+    }
+    .scene .app-icon {
+      position: relative; z-index: 2;
+      width: clamp(220px, 22vw, 340px); aspect-ratio: 1;
+      border-radius: 22.5%;
+      overflow: hidden;
+      box-shadow: 0 24px 50px #0f1f3a2e;
+      transform: rotate(-6deg);
+      transition: transform .35s cubic-bezier(.2, 1.4, .4, 1);
+    }
+    .scene .app-icon img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .scene:hover .app-icon { transform: rotate(-2deg) translateY(-8px); }
+    .backdrop { position: absolute; z-index: -1; pointer-events: none; }
+    .sticker {
+      position: absolute; z-index: 3; pointer-events: none;
+      padding: 20px 24px; border-radius: 8px;
+      font-size: 24px; font-weight: 850; line-height: 1.4;
+      transform: rotate(-9deg);
+    }
+    .doodle { position: absolute; z-index: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+
+    /* WordDrop: water rings */
+    .worddrop .ring { border-radius: 50%; border: 2px solid #4fb0ea66; aspect-ratio: 1; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+    .worddrop .ring.r1 { width: min(36vw, 520px); }
+    .worddrop .ring.r2 { width: min(26vw, 380px); border-color: #4fb0eaa0; }
+    .worddrop .sticker { right: 0; bottom: 10%; background: #fff; color: #173a55; box-shadow: 4px 8px 0 #173a5512; border-radius: 20px; }
+    .worddrop .drop { right: 14%; top: 4%; width: 44px; height: 64px; fill: #4fb0ea; stroke: none; }
+
+    /* Sponte: orbit */
+    .sponte .orbit { width: min(40vw, 580px); aspect-ratio: 1; border: 1px solid #ffffff88; border-radius: 50%; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+    .sponte .orbit.o2 { width: min(28vw, 410px); border-color: #ffffff44; }
+    .sponte .sticker { left: 0; top: 56%; background: #e8f09d; color: #202b28; box-shadow: 4px 8px 0 #10183d40; }
+    .sponte .doodle { left: 4%; top: 30%; width: 90px; height: 70px; stroke: #e8f09d; stroke-width: 4; }
+
+    /* Tomedoki: orange disc */
+    .tomedoki .disc { width: min(34vw, 500px); aspect-ratio: 1; border-radius: 50%; background: #ff8a1f; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+    .tomedoki .scene .app-icon { box-shadow: 0 24px 60px #00000080; }
+    .tomedoki .sticker { right: 2%; bottom: 8%; background: #fff6e8; color: #161616; border-radius: 20px; transform: rotate(8deg); }
+    .tomedoki .doodle { left: 4%; top: 6%; width: 90px; height: 80px; stroke: #fff6e8; stroke-width: 4; }
+
+    /* Smozero: smoke curl */
+    .smozero .disc { width: min(34vw, 500px); aspect-ratio: 1; border-radius: 50%; background: #e3d7f0; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+    .smozero .doodle { right: 8%; top: 0; width: 120px; height: 160px; stroke: #c99a4c; stroke-width: 3; }
+    .smozero .sticker {
+      left: 2%; bottom: 6%; background: none; padding: 0 0 7px;
+      border-bottom: 1px solid currentColor; border-radius: 0; font-weight: 650; font-size: 24px;
+    }
+    .smozero .sticker strong { font-family: var(--display); font-weight: 400; font-size: 1.3em; color: #c99a4c; }
+
+    /* Inutecho: notebook */
+    .inutecho .page {
+      width: min(36vw, 520px); aspect-ratio: 1.25; left: 50%; top: 50%;
+      transform: translate(-50%, -50%) rotate(5deg);
+      background: #fffaf2; border-radius: 26px;
+      border: 2px dashed #8a4a2280; outline: 10px solid #fffaf2;
+      box-shadow: 0 20px 40px #5a2d1414;
+    }
+    .inutecho .sticker {
+      right: 0; top: 10%; background: #8a4a22; color: #fff6ea;
+      border-radius: 99px; padding: 14px 24px; transform: rotate(10deg);
+      font-family: var(--display); font-weight: 400; letter-spacing: .02em; font-size: 22px;
+    }
+    .inutecho .doodle { left: 6%; bottom: 8%; width: 80px; height: 80px; fill: #8a4a2240; stroke: none; }
+
+    /* ---------- Chapter footer ---------- */
+    .chapter-footer {
+      position: absolute; bottom: 110px; left: 40px; right: 40px;
+      border-top: 1px solid currentColor; padding-top: 18px;
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
+      font-size: 16px; font-weight: 750;
+    }
+    .count { font-variant-numeric: tabular-nums; font-weight: 800; white-space: nowrap; }
+    .next { display: flex; align-items: center; gap: 12px; text-decoration: none; min-height: 38px; }
+    .next:hover { text-decoration: underline; text-underline-offset: 6px; }
+
+    /* ---------- Dock ---------- */
+    .dock {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 25;
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
+      width: min(860px, calc(100% - 32px)); padding: 9px;
+      background: #fffffff5; border: 1px solid #25332c24; border-radius: 99px;
+      box-shadow: 0 6px 24px #25332c14; color: #25332c;
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    }
+    .dock a {
+      display: flex; align-items: center; justify-content: center; gap: 9px;
+      min-height: 48px; padding: 5px 12px; border-radius: 99px;
+      text-decoration: none; font-size: 13px; font-weight: 750; white-space: nowrap;
+      transition: background .2s, color .2s;
+    }
+    .dock img { width: 31px; height: 31px; border-radius: 9px; }
+    .dock a:hover { background: #ecf0e8; }
+    .dock a[aria-current="true"] { background: var(--dock-bg, #173a55); color: var(--dock-color, #fff); }
+
+    /* ---------- Tail ---------- */
+    .tail {
+      display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap;
+      padding: 28px 40px 128px; background: #173a55; color: #e4f2fb;
+      font-size: 12px; line-height: 1.9;
+    }
+    .tail a { text-underline-offset: 4px; }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 1100px) {
+      .site-header { padding: 0 28px; }
+      .header-inner { height: 78px; }
+      .brand span { font-size: 21px; }
+      .brand img { height: 32px; }
+      .tagline { font-size: 12px; }
+      .menu-toggle { font-size: 12px; padding: 10px 18px; }
+      .chapter { padding: 125px 5vw 165px; }
+      .hero-title { font-size: 12.8vw; }
+      .sub-head { font-size: 2.8vw; }
+      .description { font-size: 13px; }
+      .actions { gap: 20px; }
+      .store { font-size: 14px; min-height: 52px; padding: 12px 22px; gap: 15px; }
+      .identity { font-size: 20px; gap: 12px; margin-bottom: 22px; }
+      .identity img { width: 48px; height: 48px; border-radius: 14px; }
+      .jp-head { font-size: 7.2vw; }
+      .sponte .jp-head, .smozero .jp-head { font-size: 6vw; }
+      .sticker { font-size: 19px; padding: 15px 18px; }
+      .chapter-footer { left: 28px; right: 28px; font-size: 14px; }
+      .dock a { font-size: 12px; gap: 7px; padding: 5px 8px; }
+      .dock img { width: 28px; height: 28px; }
+    }
+    @media (max-width: 740px) {
+      .site-header { padding: 0 20px; }
+      .header-inner { height: 70px; gap: 16px; }
+      .brand span { font-size: 19px; }
+      .brand small { font-size: 12px; margin-left: 7px; }
+      .brand img { height: 28px; }
+      .tagline { display: none; }
+      .menu-toggle { padding: 8px 15px; font-size: 11px; }
+      .menu { width: min(310px, calc(100vw - 40px)); }
+      .chapter { padding: 105px 26px 190px; align-items: flex-start; }
+      .chapter-inner, .chapter.is-flipped .chapter-inner { grid-template-columns: minmax(0, 1fr); gap: 34px; }
+      .chapter.is-flipped .scene { order: 0; }
+      .hero-title { font-size: clamp(76px, 21vw, 140px); line-height: .94; letter-spacing: -.06em; margin-bottom: 23px; }
+      .sub-head { font-size: clamp(23px, 5.6vw, 34px); margin-bottom: 12px; white-space: normal; }
+      .description { font-size: 13px; line-height: 1.9; margin-bottom: 22px; }
+      .description br { display: none; }
+      .actions { gap: 22px; }
+      .store { font-size: 14px; min-height: 48px; padding: 11px 22px; gap: 15px; }
+      .arrow { width: 20px; height: 20px; }
+      .identity { font-size: 19px; margin-bottom: 19px; }
+      .identity img { width: 43px; height: 43px; border-radius: 13px; }
+      .jp-head { font-size: clamp(42px, 11.6vw, 72px); line-height: 1.3; margin-bottom: 20px; letter-spacing: -.06em; }
+      .jp-head span { white-space: normal; }
+      .sponte .jp-head { font-size: clamp(42px, 11.6vw, 72px); }
+      .smozero .jp-head { font-size: clamp(34px, 9.4vw, 60px); }
+      .scene { height: clamp(280px, 78vw, 420px); width: 88%; margin: auto; }
+      .scene .app-icon { width: clamp(160px, 46vw, 240px); }
+      .worddrop .ring.r1, .sponte .orbit, .tomedoki .disc, .smozero .disc { width: 100%; }
+      .worddrop .ring.r2, .sponte .orbit.o2 { width: 72%; }
+      .inutecho .page { width: 100%; }
+      .sticker { font-size: 15px; padding: 11px 14px; border-radius: 6px; }
+      .worddrop .sticker, .tomedoki .sticker { border-radius: 14px; right: -6%; }
+      .smozero .sticker { font-size: 16px; left: -4%; }
+      .inutecho .sticker { font-size: 16px; padding: 10px 18px; right: -6%; }
+      .doodle { transform: scale(.7); }
+      .chapter-footer { left: 20px; right: 20px; bottom: 102px; padding-top: 14px; font-size: 12px; }
+      .chapter-footer .next { gap: 7px; }
+      .dock { bottom: 13px; padding: 6px; gap: 2px; border-radius: 23px; width: calc(100% - 24px); }
+      .dock a { flex-direction: column; gap: 4px; min-height: 55px; font-size: 9px; border-radius: 17px; padding: 4px 2px; }
+      .dock img { width: 25px; height: 25px; border-radius: 7px; }
+      .tail { padding: 25px 24px 115px; flex-direction: column; align-items: flex-start; gap: 10px; font-size: 11px; }
+    }
+    @media (max-width: 360px) {
+      .chapter { padding-left: 22px; padding-right: 22px; }
+      .store { font-size: 12px; padding: 11px 18px; }
+      .description { font-size: 12px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+      a.store:hover, .scene:hover .app-icon { transform: none; }
+    }
+  </style>
 </head>
-<body class="font-sans text-navy bg-slate-50 antialiased">
-  <header class="fixed top-0 left-0 right-0 z-50 bg-slate-50/70 backdrop-blur-md border-b border-slate-200/60">
-    <div class="px-6 sm:px-8 h-16 flex items-center">
-      <div class="max-w-4xl mx-auto w-full">
-        <a href="https://sponvita.co.jp/" class="flex items-center gap-0">
-          <img src="icon.svg" alt="" width="38" height="34" class="h-9 w-auto flex-shrink-0">
-          <span class="text-lg font-semibold tracking-tighter text-navy">SPONVITA</span>
-        </a>
+<body>
+  <a class="skip" href="#worddrop">本文へスキップ</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="https://sponvita.co.jp/" aria-label="SPONVITA コーポレートサイト">
+        <img src="icon.svg" alt="" width="38" height="34">
+        <span>SPONVITA</span><small>Apps</small>
+      </a>
+      <p class="tagline">毎日の、小さな一歩に。</p>
+      <div class="menu-wrap">
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="app-menu">アプリ一覧</button>
+        <nav class="menu" id="app-menu" aria-label="アプリ一覧" hidden>
+          <a href="#worddrop" data-app="worddrop"><img src="k01-word-drop-icon.png" alt="">WordDrop<span class="order">01</span></a>
+          <a href="#sponte" data-app="sponte"><img src="k02-sponte-icon.png" alt="">Sponte<span class="order">02</span></a>
+          <a href="#tomedoki" data-app="tomedoki"><img src="k04-tomedoki-icon.png" alt="">とめどき<span class="order">03</span></a>
+          <a href="#smozero" data-app="smozero"><img src="k05-smozero-icon.png" alt="">スモゼロ<span class="order">04</span></a>
+          <a href="#inutecho" data-app="inutecho"><img src="k06-inutecho-icon.png" alt="">いぬ手帳<span class="order">05</span></a>
+        </nav>
       </div>
     </div>
   </header>
 
-  <main class="pt-16">
-    <!-- Page Header -->
-    <section class="pt-16 sm:pt-20 pb-8 px-6 sm:px-8">
-      <div class="max-w-4xl mx-auto">
-        <h1 class="text-4xl sm:text-5xl font-black tracking-tighter text-navy mb-6">Apps</h1>
+  <nav class="dock" aria-label="アプリを切り替え">
+    <a href="#worddrop" data-app="worddrop" aria-current="true"><img src="k01-word-drop-icon.png" alt="">WordDrop</a>
+    <a href="#sponte" data-app="sponte"><img src="k02-sponte-icon.png" alt="">Sponte</a>
+    <a href="#tomedoki" data-app="tomedoki"><img src="k04-tomedoki-icon.png" alt="">とめどき</a>
+    <a href="#smozero" data-app="smozero"><img src="k05-smozero-icon.png" alt="">スモゼロ</a>
+    <a href="#inutecho" data-app="inutecho"><img src="k06-inutecho-icon.png" alt="">いぬ手帳</a>
+  </nav>
+
+  <main>
+    <!-- 01 WordDrop -->
+    <section class="chapter worddrop" id="worddrop" data-app="worddrop" aria-labelledby="worddrop-title">
+      <div class="chapter-inner">
+        <div class="copy">
+          <h1 class="hero-title" id="worddrop-title"><span>WORD</span><span>DROP<span class="dot">.</span></span></h1>
+          <p class="sub-head">好きな言葉を、ホーム画面に。</p>
+          <p class="description">本の一節や名言を、さっと保存。<br>ウィジェットで、いつでもホーム画面に表示できます。</p>
+          <div class="actions">
+            <a class="store" href="https://apps.apple.com/jp/app/worddrop-%E5%90%8D%E8%A8%80-%E8%AA%AD%E6%9B%B8%E3%83%A1%E3%83%A2%E7%AE%A1%E7%90%86/id6761678817" target="_blank" rel="noopener">App Storeで見る<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
+          </div>
+        </div>
+        <div class="scene" aria-hidden="true">
+          <span class="backdrop ring r1"></span>
+          <span class="backdrop ring r2"></span>
+          <svg class="doodle drop" viewBox="0 0 44 64"><path d="M22 2C22 2 2 28 2 42a20 20 0 0 0 40 0C42 28 22 2 22 2z"/></svg>
+          <div class="app-icon"><img src="k01-word-drop-icon.png" alt=""></div>
+          <p class="sticker">好きなフレーズが<br>いつでも</p>
+        </div>
+      </div>
+      <div class="chapter-footer">
+        <span class="count">01 / 05</span>
+        <a class="next" href="#sponte">次は Sponte<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
       </div>
     </section>
 
-    <!-- App List -->
-    <section class="pb-32 px-6 sm:px-8">
-      <div class="max-w-4xl mx-auto space-y-10">
-
-        <!-- WordDrop -->
-        <a href="word-drop/" class="block border border-slate-200 rounded-2xl bg-white overflow-hidden hover:border-accent/40 hover:shadow-md transition-all">
-          <div class="p-8 sm:p-10">
-            <div class="flex items-start gap-6 sm:gap-8">
-              <!-- Icon -->
-              <div class="flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden">
-                <img src="k01-word-drop-icon.png" alt="WordDrop icon" class="w-full h-full object-cover">
-              </div>
-              <!-- App info -->
-              <div class="flex-1 min-w-0">
-                <div class="flex flex-wrap items-center gap-2 mb-2">
-                  <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-navy">WordDrop</h2>
-                </div>
-                <p class="text-xs text-slate-400 tracking-wider uppercase mb-4">iOS / Android</p>
-                <p class="text-slate-600 text-sm leading-relaxed">
-                  心に残った言葉を、いつでも手元に。<br>
-                  読書中に出会った名言や心に響いたフレーズを記録し、ホーム画面ウィジェットでふとした瞬間に振り返れるアプリです。
-                </p>
-              </div>
-            </div>
+    <!-- 02 Sponte -->
+    <section class="chapter sponte" id="sponte" data-app="sponte" aria-labelledby="sponte-title">
+      <div class="chapter-inner">
+        <div class="copy">
+          <p class="identity"><img src="k02-sponte-icon.png" alt="">Sponte</p>
+          <h2 class="jp-head" id="sponte-title"><span>今日やるのは、</span><span>3つだけ。</span></h2>
+          <p class="description">やることは分かっているのに、動けない日に。<br>今日の3つを決めて、1つずつ終わらせるアプリです。</p>
+          <div class="actions">
+            <a class="store" href="https://apps.apple.com/jp/app/sponte-%E4%BB%8A%E6%97%A5%E3%82%84%E3%82%8B3%E3%81%A4%E3%81%A0%E3%81%91-%E3%82%B7%E3%83%B3%E3%83%97%E3%83%AB%E3%82%BF%E3%82%B9%E3%82%AF%E7%AE%A1%E7%90%86-%E8%A8%98%E9%8C%B2/id6765797663" target="_blank" rel="noopener">App Storeで見る<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
           </div>
-        </a>
+        </div>
+        <div class="scene" aria-hidden="true">
+          <span class="backdrop orbit"></span>
+          <span class="backdrop orbit o2"></span>
+          <svg class="doodle" viewBox="0 0 90 70"><path d="M6 8c30 0 58 14 72 46M78 54l-16-4M78 54l2-16"/></svg>
+          <div class="app-icon"><img src="k02-sponte-icon.png" alt=""></div>
+          <p class="sticker">1つずつ、<br>終わらせる</p>
+        </div>
+      </div>
+      <div class="chapter-footer">
+        <span class="count">02 / 05</span>
+        <a class="next" href="#tomedoki">次は とめどき<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </section>
 
-        <!-- Sponte -->
-        <a href="sponte/" class="block border border-slate-200 rounded-2xl bg-white overflow-hidden hover:border-accent/40 hover:shadow-md transition-all">
-          <div class="p-8 sm:p-10">
-            <div class="flex items-start gap-6 sm:gap-8">
-              <!-- Icon -->
-              <div class="flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden">
-                <img src="k02-sponte-icon.png" alt="Sponte icon" class="w-full h-full object-cover">
-              </div>
-              <!-- App info -->
-              <div class="flex-1 min-w-0">
-                <div class="flex flex-wrap items-center gap-2 mb-2">
-                  <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-navy">Sponte</h2>
-                </div>
-                <p class="text-xs text-slate-400 tracking-wider uppercase mb-4">iOS / Android</p>
-                <p class="text-slate-600 text-sm leading-relaxed">
-                  動けない日のための、実行支援アプリ。<br>
-                  今日の3つを決めて、いま取り組む1つだけを画面に出す。「何から始めよう」で迷う時間が減ります。
-                </p>
-              </div>
-            </div>
+    <!-- 03 とめどき -->
+    <section class="chapter tomedoki is-flipped" id="tomedoki" data-app="tomedoki" aria-labelledby="tomedoki-title">
+      <div class="chapter-inner">
+        <div class="copy">
+          <p class="identity"><img src="k04-tomedoki-icon.png" alt="">とめどき</p>
+          <h2 class="jp-head" id="tomedoki-title"><span>長居だけ、</span><span class="em">とめる。</span></h2>
+          <p class="description">スマホを禁止せず、SNSや動画の見すぎだけを止める。<br>登録したアプリに、ロックで区切りをつけます。</p>
+          <div class="actions">
+            <a class="store" href="https://apps.apple.com/jp/app/%E3%81%A8%E3%82%81%E3%81%A9%E3%81%8D-%E3%82%B9%E3%83%9E%E3%83%9B%E4%BE%9D%E5%AD%98%E5%AF%BE%E7%AD%96-%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%BF%E3%82%A4%E3%83%A0-%E3%82%B9%E3%83%9E%E3%83%9B%E5%88%B6%E9%99%90%E3%82%A2%E3%83%97%E3%83%AA/id6812798907" target="_blank" rel="noopener">App Storeで見る<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
           </div>
-        </a>
+        </div>
+        <div class="scene" aria-hidden="true">
+          <span class="backdrop disc"></span>
+          <svg class="doodle" viewBox="0 0 90 80"><path d="M10 40h16M45 8v16M20 16l11 11M70 16 59 27"/></svg>
+          <div class="app-icon"><img src="k04-tomedoki-icon.png" alt=""></div>
+          <p class="sticker">見すぎたら、<br>ロック</p>
+        </div>
+      </div>
+      <div class="chapter-footer">
+        <span class="count">03 / 05</span>
+        <a class="next" href="#smozero">次は スモゼロ<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </section>
 
+    <!-- 04 スモゼロ -->
+    <section class="chapter smozero" id="smozero" data-app="smozero" aria-labelledby="smozero-title">
+      <div class="chapter-inner">
+        <div class="copy">
+          <p class="identity"><img src="k05-smozero-icon.png" alt="">スモゼロ</p>
+          <h2 class="jp-head" id="smozero-title"><span>吸いたい瞬間を、</span><span>乗り越える。</span></h2>
+          <p class="description">「吸いたい」瞬間を記録し、試し、振り返る。<br>使うほど、自分に効く乗り越え方が分かっていく禁煙アプリ。</p>
+          <div class="actions">
+            <a class="store" href="https://apps.apple.com/jp/app/%E3%82%B9%E3%83%A2%E3%82%BC%E3%83%AD-%E7%A6%81%E7%85%99%E3%82%A2%E3%83%97%E3%83%AA-%E3%82%BF%E3%83%90%E3%82%B3%E3%82%92%E3%82%84%E3%82%81%E3%82%8B%E8%A8%98%E9%8C%B2%E3%81%A8%E7%BF%92%E6%85%A3%E3%82%B5%E3%83%9D%E3%83%BC%E3%83%88/id6814345857" target="_blank" rel="noopener">App Storeで見る<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
+          </div>
+        </div>
+        <div class="scene" aria-hidden="true">
+          <span class="backdrop disc"></span>
+          <svg class="doodle" viewBox="0 0 120 160"><path d="M40 150c-30-30 30-45 0-80S70 20 50 6M78 140c-22-24 22-36 0-64s24-40 10-58"/></svg>
+          <div class="app-icon"><img src="k05-smozero-icon.png" alt=""></div>
+          <p class="sticker">今日も、<strong>0</strong>本。</p>
+        </div>
+      </div>
+      <div class="chapter-footer">
+        <span class="count">04 / 05</span>
+        <a class="next" href="#inutecho">次は いぬ手帳<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </section>
+
+    <!-- 05 いぬ手帳 (Coming Soon) -->
+    <section class="chapter inutecho is-flipped" id="inutecho" data-app="inutecho" aria-labelledby="inutecho-title">
+      <div class="chapter-inner">
+        <div class="copy">
+          <p class="identity"><img src="k06-inutecho-icon.png" alt="">いぬ手帳</p>
+          <h2 class="jp-head" id="inutecho-title"><span>簡単、</span><span>お世話記録。</span></h2>
+          <p class="description">散歩・ごはん・うんちを、押すだけで記録。<br>手書きのお世話ノートのように、愛犬の1日が時刻順に残ります。</p>
+          <div class="actions">
+            <span class="store is-soon" aria-disabled="true">Coming Soon</span>
+          </div>
+        </div>
+        <div class="scene" aria-hidden="true">
+          <span class="backdrop page"></span>
+          <svg class="doodle" viewBox="0 0 80 80"><ellipse cx="40" cy="54" rx="17" ry="14"/><ellipse cx="17" cy="32" rx="8" ry="10"/><ellipse cx="32" cy="18" rx="8" ry="10"/><ellipse cx="50" cy="18" rx="8" ry="10"/><ellipse cx="64" cy="32" rx="8" ry="10"/></svg>
+          <div class="app-icon"><img src="k06-inutecho-icon.png" alt=""></div>
+          <p class="sticker">Coming Soon</p>
+        </div>
+      </div>
+      <div class="chapter-footer">
+        <span class="count">05 / 05</span>
+        <a class="next" href="#worddrop">最初にもどる<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></a>
       </div>
     </section>
   </main>
 
-  <footer class="py-12 px-6 sm:px-8 border-t border-slate-100">
-    <div class="max-w-4xl mx-auto text-center">
-      <p class="text-sm text-slate-500">&copy; 2026 SPONVITA Inc.</p>
-    </div>
-  </footer>
+  <div class="tail">
+    <a href="https://sponvita.co.jp/">株式会社SPONVITA</a>
+    <footer>&copy; 2026 SPONVITA Inc.</footer>
+  </div>
+
+  <script>
+    (function () {
+      var toggle = document.querySelector('.menu-toggle');
+      var menu = document.getElementById('app-menu');
+      function closeMenu() { menu.hidden = true; toggle.setAttribute('aria-expanded', 'false'); }
+      toggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var open = menu.hidden;
+        menu.hidden = !open;
+        toggle.setAttribute('aria-expanded', String(open));
+      });
+      menu.addEventListener('click', function (e) { if (e.target.closest('a')) closeMenu(); });
+      document.addEventListener('click', function (e) { if (!menu.hidden && !e.target.closest('.menu-wrap')) closeMenu(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMenu(); });
+
+      var chapters = Array.prototype.slice.call(document.querySelectorAll('.chapter'));
+      var links = document.querySelectorAll('.dock a, .menu a');
+      var header = document.querySelector('.site-header');
+      var dock = document.querySelector('.dock');
+
+      function setCurrent(section) {
+        var app = section.dataset.app;
+        if (document.body.dataset.current === app) return;
+        document.body.dataset.current = app;
+        var cs = getComputedStyle(section);
+        header.style.setProperty('--head-bg', cs.getPropertyValue('--head-bg').trim());
+        header.style.setProperty('--head-color', cs.getPropertyValue('--color').trim());
+        dock.style.setProperty('--dock-bg', cs.getPropertyValue('--dock-bg').trim());
+        dock.style.setProperty('--dock-color', cs.getPropertyValue('--dock-color').trim());
+        links.forEach(function (a) {
+          if (a.dataset.app === app) a.setAttribute('aria-current', 'true');
+          else a.removeAttribute('aria-current');
+        });
+      }
+
+      function update() {
+        var probe = window.innerHeight * 0.45;
+        for (var i = chapters.length - 1; i >= 0; i--) {
+          if (chapters[i].getBoundingClientRect().top <= probe) { setCurrent(chapters[i]); return; }
+        }
+        setCurrent(chapters[0]);
+      }
+      var ticking = false;
+      window.addEventListener('scroll', function () {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(function () { ticking = false; update(); });
+      }, { passive: true });
+      window.addEventListener('resize', update);
+      update();
+    })();
+  </script>
 </body>
 </html>
